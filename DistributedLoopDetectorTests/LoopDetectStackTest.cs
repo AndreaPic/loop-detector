@@ -13,10 +13,11 @@ namespace DistributedLoopDetectorTests
     public class LoopDetectStackTest
     {
 
-        [Fact]
-        public void AddTest()
+        [Theory]
+        [InlineData(short.MaxValue)]
+        public void AddTest(int count)
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < count; i++)
             {
                 var key = Guid.NewGuid().ToString("N");
                 LoopDetectStack.Instance.AddLoopDetectInfo("actionName", key);
@@ -28,10 +29,11 @@ namespace DistributedLoopDetectorTests
             }
         }
 
-        [Fact]
-        public void RemoveTest()
+        [Theory]
+        [InlineData(short.MaxValue)]
+        public void RemoveTest(int count)
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < count; i++)
             {
                 var key = Guid.NewGuid().ToString("N");
                 LoopDetectStack.Instance.AddLoopDetectInfo("actionName", key);
@@ -59,7 +61,6 @@ namespace DistributedLoopDetectorTests
         private void Add(object? state)
         {
             string key = (string)state;
-            Debug.WriteLine(key);
             LoopDetectStack.Instance.AddLoopDetectInfo("actionName", key);
         }
 
@@ -74,7 +75,6 @@ namespace DistributedLoopDetectorTests
         }
         private void NotExists(Task t, object? state)
         {
-            //Interlocked.Increment(ref counter);
             string key = (string)state;
             var match = LoopDetectStack.Instance.LoopDetectInfoMatch("actionName", key);
             Assert.False(match);
@@ -90,7 +90,7 @@ namespace DistributedLoopDetectorTests
 
         [Theory]
         [InlineData(short.MaxValue)]
-        public void ThreadTest(int threadCount)
+        public void ThreadTest1(int threadCount)
         {
             for(int i = 0; i < threadCount; i++)
             {
@@ -103,17 +103,6 @@ namespace DistributedLoopDetectorTests
             for (int l = 0; l < count-1; l++)
             {
                 mainLoops.TryTake(out string key);
-                //Debug.WriteLine(key);
-                //tasks.Add(Task.Factory.StartNew(() => Check(key))
-                //.ContinueWith(t =>
-                //{
-                //    if (t.Exception != null)
-                //    {
-                //        passed = false;
-                //    }
-                //    Assert.Null(t.Exception);
-                //}));
-
                 tasks.Add(Task.Factory.StartNew(() => Add(key))
                 .ContinueWith(t => Exists(t, key))
                 .ContinueWith(t => Remove(t, key))
@@ -126,12 +115,40 @@ namespace DistributedLoopDetectorTests
                     }
                     Assert.Null(t.Exception);
                 }));
-            }
-            
+            }          
             Task.WaitAll(tasks.ToArray());
-            Debug.WriteLine(counter.ToString());
             Assert.True(passed);
-
         }
+
+        [Theory]
+        [InlineData(short.MaxValue)]
+        public void ThreadTest(int threadCount)
+        {
+            for (int i = 0; i < threadCount; i++)
+            {
+                mainLoops.Add(Guid.NewGuid().ToString("N"));
+            }
+            List<Task> tasks = new List<Task>();
+            bool passed = true;
+            int count = mainLoops.Count;
+
+            for (int l = 0; l < count - 1; l++)
+            {
+                mainLoops.TryTake(out string key);
+                tasks.Add(Task.Factory.StartNew(() => Check(key))
+                .ContinueWith(t =>
+                {
+                    if (t.Exception != null)
+                    {
+                        passed = false;
+                    }
+                    Assert.Null(t.Exception);
+                }));
+            }
+
+            Task.WaitAll(tasks.ToArray());
+            Assert.True(passed);
+        }
+
     }
 }
