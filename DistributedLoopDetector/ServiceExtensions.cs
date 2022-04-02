@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using System;
 using System.Collections.Generic;
@@ -35,5 +37,19 @@ namespace DistributedLoopDetector
                 });
             return services;
         }
+
+        /// <summary>
+        /// Use to use DistributedCache instead of local memory
+        /// </summary>
+        /// <param name="app">application builder</param>
+        /// <param name="applicationName">application name</param>
+        /// <returns></returns>
+        public static IApplicationBuilder UseDistributedCacheForLoopDetector(this IApplicationBuilder app, string applicationName)
+        {
+            var cache = app.ApplicationServices.GetService<IDistributedCache>();
+            LoopDetectStack.Instance.SetDistributedCache(cache, applicationName);
+            return app;
+        }
+
     }
 }
