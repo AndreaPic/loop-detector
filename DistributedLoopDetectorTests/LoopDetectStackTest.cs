@@ -64,9 +64,6 @@ namespace DistributedLoopDetectorTests
             LoopDetectStack.Instance.AddLoopDetectInfo("actionName", key);
         }
 
-        private volatile object sync = new object();
-
-        int counter = 0;
         private void Exists(Task t, object? state)
         {
             string key = (string)state;
