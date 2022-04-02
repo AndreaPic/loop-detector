@@ -21,18 +21,20 @@ namespace DistributedLoopDetector
         /// <param name="context">Executing context</param>
         public void OnResourceExecuting(ResourceExecutingContext context)
         {
-            var headers = context?.HttpContext?.Request?.Headers;
-            string path = context?.HttpContext?.Request?.Path;
-            if ( (headers != null) && (!string.IsNullOrEmpty(path)))
+            if (context is not null)
             {
-                var header = headers.FirstOrDefault(head => head.Key == LoopDetectorHandler.HeaderName);
-                bool loopDetected = header.Value.FirstOrDefault(item => LoopDetectStack.Instance.LoopDetectInfoMatch(path, item)) != null;
-                if (loopDetected)
+                var headers = context!.HttpContext?.Request?.Headers;
+                string? path = context.HttpContext?.Request?.Path;
+                if ((headers != null) && (!string.IsNullOrEmpty(path)))
                 {
-                    context.Result = new StatusCodeResult(508);
+                    var header = headers.FirstOrDefault(head => head.Key == LoopDetectorHandler.HeaderName);
+                    bool loopDetected = header.Value.FirstOrDefault(item => LoopDetectStack.Instance.LoopDetectInfoMatch(path, item)) != null;
+                    if (loopDetected)
+                    {
+                        context.Result = new StatusCodeResult(508);
+                    }
                 }
-            }
-            
+            }            
         }
     }
 }

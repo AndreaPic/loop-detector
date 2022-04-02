@@ -11,7 +11,7 @@ namespace DistributedLoopDetector
         /// <summary>
         /// current loopId (identify current loop context)
         /// </summary>
-        private string loopId = null;
+        private string? loopId = null;
 
         /// <summary>
         /// When an action is starting look for a loopid in message header.
@@ -22,7 +22,7 @@ namespace DistributedLoopDetector
         /// </param>
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            string path = context?.HttpContext?.Request?.Path;
+            string? path = context?.HttpContext?.Request?.Path;
             if ( (path != null) && (context!=null))
             {
                 if (!context.HttpContext.Request.Headers.ContainsKey(LoopDetectorHandler.HeaderName))
@@ -50,12 +50,18 @@ namespace DistributedLoopDetector
         /// </param>
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            string path = context?.HttpContext?.Request?.Path;
-            if (path != null && loopId != null)
+            if (context is not null)
             {
-                LoopDetectStack.Instance.RemoveLoopDetectInfo(path, loopId);
-                context.HttpContext.Items.Remove(LoopDetectorHandler.HeaderName);
-                loopId = null;
+                string path = context.HttpContext?.Request?.Path!;
+                if (path != null && loopId != null)
+                {
+                    LoopDetectStack.Instance.RemoveLoopDetectInfo(path, loopId);
+                    if (context.HttpContext != null)
+                    {
+                        context.HttpContext.Items.Remove(LoopDetectorHandler.HeaderName);
+                    }
+                    loopId = null;
+                }
             }
         }
 

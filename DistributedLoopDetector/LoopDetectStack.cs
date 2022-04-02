@@ -10,25 +10,28 @@ namespace DistributedLoopDetector
         /// <summary>
         /// Multidimensional repository that memorize currents loop context
         /// </summary>
-        private ConcurrentDictionary<string, List<string>> LoopDetectActions 
-            = new ConcurrentDictionary<string, List<string>>();
+        private ConcurrentDictionary<string, HashSet<string>> LoopDetectActions;
 
         /// <summary>
         /// Singleton instance
         /// </summary>
-        private static volatile LoopDetectStack _instance;
+        private static LoopDetectStack _instance;
+
         /// <summary>
         /// critical section handler
-        /// </summary>
-        private static readonly object SyncLock = new();
+        /// </summary>        
+        private static volatile object SyncLock = new();
+
         /// <summary>
         /// Private default constructor
         /// </summary>
         private LoopDetectStack()
         {
+            LoopDetectActions = new ConcurrentDictionary<string, HashSet<string>>();
+            synkObj = new object();
         }
         /// <summary>
-        /// Singleton Intance
+        /// Singleton Instance
         /// </summary>
         public static LoopDetectStack Instance
         {
@@ -52,7 +55,7 @@ namespace DistributedLoopDetector
         /// <summary>
         /// inner dimension critical section handler
         /// </summary>
-        private readonly object synkObj = new object();
+        private volatile object synkObj;
 
         /// <summary>
         /// Check if there is a loopid for a specific action
@@ -62,18 +65,21 @@ namespace DistributedLoopDetector
         /// <returns>True if there is the loop id for the requested action</returns>
         internal bool LoopDetectInfoMatch(string actionName, string loopDetectId)
         {
-            var actionPresent = LoopDetectActions.TryGetValue(actionName, out var list);
-            if (actionPresent)
-            {
-                lock (synkObj)
+            //lock (synkObj)
+            //{
+                var actionPresent = LoopDetectActions.TryGetValue(actionName, out var list);
+                if (actionPresent && list is not null)
                 {
-                    if (list.Contains(loopDetectId))
+                    lock (synkObj)
                     {
-                        return true;
+                        if (list.Contains(loopDetectId))
+                        {
+                            return true;
+                        }
                     }
                 }
-            }
-            return false;
+                return false;
+            //}
         }
         /// <summary>
         /// Get all active loopid for a specified Action
@@ -82,15 +88,28 @@ namespace DistributedLoopDetector
         /// <returns>active loop id list</returns>
         internal IReadOnlyList<string> GetDetectInfo(string actionName)
         {
-            var actionPresent = LoopDetectActions.TryGetValue(actionName, out var list);
-            if (actionPresent)
-            {
-                return list.ToList();
-            }
-            else
-            {
-                return null;
-            }
+            //lock (synkObj)
+            //{
+                var actionPresent = LoopDetectActions.TryGetValue(actionName, out var list);
+                if (actionPresent)
+                {
+                    if (list != null)
+                    {
+                        lock (synkObj)
+                        {
+                            return list.ToList();
+                        }
+                    }
+                    else
+                    {
+                        return new List<string>();
+                    }
+                }
+                else
+                {
+                    return new List<string>();
+                }
+            //}
         }
         /// <summary>
         /// Add a new loopid for an action
@@ -99,14 +118,22 @@ namespace DistributedLoopDetector
         /// <param name="loopDetectId">A new loop for the action</param>
         internal void AddLoopDetectInfo(string actionName, string loopDetectId)
         {
-            LoopDetectActions.AddOrUpdate(actionName, new List<string>(new [] {loopDetectId}), (key,bag) =>
+            //lock (synkObj)
+            //{
+                LoopDetectActions.AddOrUpdate(actionName,
+                                        new HashSet<string>(new[] { loopDetectId }),
+                                        (key, bag) =>
                                         {
                                             lock (synkObj)
                                             {
-                                                bag.Add(loopDetectId);
+                                                if (!bag.Contains(loopDetectId))
+                                                {
+                                                    bag.Add(loopDetectId);
+                                                }
                                             }
                                             return bag;
                                         });
+            //}
         }
         /// <summary>
         /// Remove a loopId for specified action
@@ -116,21 +143,34 @@ namespace DistributedLoopDetector
         /// <returns>True if removed</returns>
         internal bool RemoveLoopDetectInfo(string actionName, string loopDetectId)
         {
-            bool removed = false;
-            bool fullRemoved = false;
-            lock (synkObj)
-            { 
+            //lock (synkObj)
+            //{
+                bool removed = false;
+                //int removedCount = 0;
+                bool fullRemoved = false;
                 var founded = LoopDetectActions.TryGetValue(actionName, out var list);
-                if (founded && list != null)
+                lock (synkObj)
                 {
-                    removed = list.Remove(loopDetectId);
-                    if (list.Count == 0)
+                    if (founded && list != null)
                     {
-                        fullRemoved = LoopDetectActions.Remove(actionName, out var removedItem);
+                        //removedCount = list.RemoveWhere((k) => k == loopDetectId);
+                        removed = list.Remove(loopDetectId);
+                        if (list.Count == 0)
+                        {
+                            fullRemoved = LoopDetectActions.Remove(actionName, out var removedItem);
+                        }
+                    }
+                    if (removed || fullRemoved)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
-            }
-            return removed || fullRemoved;
+                //return removed || fullRemoved;
+            //}
         }
     }
 }
