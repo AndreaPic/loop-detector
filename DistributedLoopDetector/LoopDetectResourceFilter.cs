@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 
 namespace DistributedLoopDetector
 {
@@ -8,6 +9,14 @@ namespace DistributedLoopDetector
     /// </summary>
     public class LoopDetectResourceFilter : IResourceFilter
     {
+
+        private ILogger _logger;
+        //TODO: use DI constructor for Logger
+        public LoopDetectResourceFilter(ILogger<LoopDetectResourceFilter> logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         /// Do nothing
         /// </summary>
@@ -21,18 +30,30 @@ namespace DistributedLoopDetector
         /// <param name="context">Executing context</param>
         public void OnResourceExecuting(ResourceExecutingContext context)
         {
-            var headers = context?.HttpContext?.Request?.Headers;
-            string path = context?.HttpContext?.Request?.Path;
-            if ( (headers != null) && (!string.IsNullOrEmpty(path)))
+            if (context is not null)
             {
-                var header = headers.FirstOrDefault(head => head.Key == LoopDetectorHandler.HeaderName);
-                bool loopDetected = header.Value.FirstOrDefault(item => LoopDetectStack.Instance.LoopDetectInfoMatch(path, item)) != null;
-                if (loopDetected)
+                var headers = context!.HttpContext?.Request?.Headers;
+                string? path = context.HttpContext?.Request?.Path;
+                if ((headers != null) && (!string.IsNullOrEmpty(path)))
                 {
-                    context.Result = new StatusCodeResult(508);
+                    var header = headers.FirstOrDefault(head => head.Key == LoopDetectorHandler.HeaderName);
+                    bool loopDetected = header.Value.FirstOrDefault(item => LoopDetectStack.Instance.LoopDetectInfoMatch(path, item)) != null;
+                    if (loopDetected)
+                    {
+                        if (context?.HttpContext?.RequestServices != null)
+                        {
+                            //var logger = context.HttpContext.RequestServices.GetService(typeof(ILogger)) as ILogger;
+                            if (_logger != null)
+                            {
+                                //TODO: use resources
+                                _logger.Log(LogLevel.Error, $"Distributed Loop Detected in: { context?.ActionDescriptor?.DisplayName }");
+                            }
+                        }
+
+                        context.Result = new StatusCodeResult(508);
+                    }
                 }
-            }
-            
+            }            
         }
     }
 }

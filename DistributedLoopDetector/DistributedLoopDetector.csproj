@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<VersionPrefix>1.0.5</VersionPrefix>
+	<VersionSuffix>-alpha</VersionSuffix>
   </PropertyGroup>
 
   <ItemGroup>

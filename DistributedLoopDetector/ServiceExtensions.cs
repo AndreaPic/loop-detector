@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using System;
 using System.Collections.Generic;
@@ -21,6 +23,7 @@ namespace DistributedLoopDetector
         public static IServiceCollection AddDistributedLoopDetector(this IServiceCollection services)
         {
             services.AddHttpContextAccessor() //adds http context accessor
+                .AddLogging()
                 .AddTransient<LoopDetectorHandler>() //register the handler to add current loop context 
                 .ConfigureAll<HttpClientFactoryOptions>(options => //its add loopid context inside the header in every HttpClient Calls
                 {
@@ -33,7 +36,22 @@ namespace DistributedLoopDetector
                     options.Filters.Add<LoopDetectResourceFilter>(); //if detect a loop it returns http error
                     options.Filters.Add<LoopDetectActionFilter>(); //add and remove current loop context for the current action
                 });
+            services.AddHttpClient();
             return services;
         }
+
+        /// <summary>
+        /// Use to use DistributedCache instead of local memory
+        /// </summary>
+        /// <param name="app">application builder</param>
+        /// <param name="applicationName">application name</param>
+        /// <returns>Configured applicaton builder</returns>
+        public static IApplicationBuilder UseDistributedCacheForLoopDetector(this IApplicationBuilder app, string applicationName)
+        {
+            var cache = app.ApplicationServices.GetService<IDistributedCache>();
+            LoopDetectStack.Instance.SetDistributedCache(cache, applicationName);
+            return app;
+        }
+
     }
 }

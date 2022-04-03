@@ -1,4 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DistributedLoopDetector
 {
@@ -10,25 +13,28 @@ namespace DistributedLoopDetector
         /// <summary>
         /// Multidimensional repository that memorize currents loop context
         /// </summary>
-        private ConcurrentDictionary<string, List<string>> LoopDetectActions 
-            = new ConcurrentDictionary<string, List<string>>();
+        private ConcurrentDictionary<string, HashSet<string>> LoopDetectActions;
 
         /// <summary>
         /// Singleton instance
         /// </summary>
-        private static volatile LoopDetectStack _instance;
+        private static LoopDetectStack _instance;
+
         /// <summary>
         /// critical section handler
-        /// </summary>
-        private static readonly object SyncLock = new();
+        /// </summary>        
+        private static volatile object SyncLock = new();
+
         /// <summary>
         /// Private default constructor
         /// </summary>
         private LoopDetectStack()
         {
+            LoopDetectActions = new ConcurrentDictionary<string, HashSet<string>>();
+            synkObj = new object();
         }
         /// <summary>
-        /// Singleton Intance
+        /// Singleton Instance
         /// </summary>
         public static LoopDetectStack Instance
         {
@@ -50,9 +56,57 @@ namespace DistributedLoopDetector
         }
 
         /// <summary>
+        /// Optionale Distributed Memeory Cache
+        /// </summary>
+        private IDistributedCache DistributedCache { get; set; }
+        /// <summary>
+        /// Application Name that use this library (used for the Cache's key)
+        /// </summary>
+        private string ApplicationName { get; set; }
+        /// <summary>
+        /// Set the cache instance to use
+        /// </summary>
+        /// <param name="distributedCache"></param>
+        /// <param name="applicationName">Application Name that use this library (used for the Cache's key)</param>
+        internal void SetDistributedCache(IDistributedCache distributedCache,string applicationName)
+        {
+            DistributedCache = distributedCache;
+            ApplicationName = applicationName;
+        }
+        /// <summary>
+        /// Retrieve the cache's current instance
+        /// </summary>
+        /// <returns>Cache instance</returns>
+        private IDistributedCache GetDistributedCache()
+        {
+            return DistributedCache;
+        }
+        /// <summary>
+        /// True if Distributed Cache use is requested
+        /// </summary>
+        private bool UseDistributedCache
+        {
+            get
+            {
+                return DistributedCache!=null;
+            }
+        }
+
+        /// <summary>
         /// inner dimension critical section handler
         /// </summary>
-        private readonly object synkObj = new object();
+        private volatile object synkObj;
+
+        /// <summary>
+        /// Compose key value for DistributedCache
+        /// </summary>
+        /// <param name="actionName">api action name</param>
+        /// <param name="loopDetectId">loop context id</param>
+        /// <returns></returns>
+        private string ComposeKey(string actionName, string loopDetectId)
+        {
+            return $"{ApplicationName}-{actionName}-{loopDetectId}";
+        }
 
         /// <summary>
         /// Check if there is a loopid for a specific action
@@ -62,36 +116,34 @@ namespace DistributedLoopDetector
         /// <returns>True if there is the loop id for the requested action</returns>
         internal bool LoopDetectInfoMatch(string actionName, string loopDetectId)
         {
-            var actionPresent = LoopDetectActions.TryGetValue(actionName, out var list);
-            if (actionPresent)
+            if (UseDistributedCache)
             {
                 lock (synkObj)
                 {
-                    if (list.Contains(loopDetectId))
+                    var cacheValue = DistributedCache.GetString(ComposeKey(actionName, loopDetectId));
+                    if (cacheValue != null)
                     {
                         return true;
                     }
                 }
             }
-            return false;
-        }
-        /// <summary>
-        /// Get all active loopid for a specified Action
-        /// </summary>
-        /// <param name="actionName">Action to look for</param>
-        /// <returns>active loop id list</returns>
-        internal IReadOnlyList<string> GetDetectInfo(string actionName)
-        {
-            var actionPresent = LoopDetectActions.TryGetValue(actionName, out var list);
-            if (actionPresent)
-            {
-                return list.ToList();
-            }
             else
             {
-                return null;
+                var actionPresent = LoopDetectActions.TryGetValue(actionName, out var list);
+                if (actionPresent && list is not null)
+                {
+                    lock (synkObj)
+                    {
+                        if (list.Contains(loopDetectId))
+                        {
+                            return true;
+                        }
+                    }
+                }
             }
+            return false;
         }
+
         /// <summary>
         /// Add a new loopid for an action
         /// </summary>
@@ -99,15 +151,32 @@ namespace DistributedLoopDetector
         /// <param name="loopDetectId">A new loop for the action</param>
         internal void AddLoopDetectInfo(string actionName, string loopDetectId)
         {
-            LoopDetectActions.AddOrUpdate(actionName, new List<string>(new [] {loopDetectId}), (key,bag) =>
+            if (UseDistributedCache)
+            {
+                lock (synkObj)
+                {
+                    DistributedCache.SetString(ComposeKey(actionName, loopDetectId), loopDetectId);
+                }
+            }
+            else
+            {
+
+                LoopDetectActions.AddOrUpdate(actionName,
+                                        new HashSet<string>(new[] { loopDetectId }),
+                                        (key, bag) =>
                                         {
                                             lock (synkObj)
                                             {
-                                                bag.Add(loopDetectId);
+                                                if (!bag.Contains(loopDetectId))
+                                                {
+                                                    bag.Add(loopDetectId);
+                                                }
                                             }
                                             return bag;
                                         });
+            }
         }
+
         /// <summary>
         /// Remove a loopId for specified action
         /// </summary>
@@ -118,19 +187,31 @@ namespace DistributedLoopDetector
         {
             bool removed = false;
             bool fullRemoved = false;
-            lock (synkObj)
-            { 
-                var founded = LoopDetectActions.TryGetValue(actionName, out var list);
-                if (founded && list != null)
+
+            if (UseDistributedCache)
+            {
+                lock (synkObj)
                 {
-                    removed = list.Remove(loopDetectId);
-                    if (list.Count == 0)
-                    {
-                        fullRemoved = LoopDetectActions.Remove(actionName, out var removedItem);
-                    }
+                    DistributedCache.Remove(ComposeKey(actionName, loopDetectId));
+                    return true;
                 }
             }
-            return removed || fullRemoved;
+            else
+            {
+                var founded = LoopDetectActions.TryGetValue(actionName, out var list);
+                lock (synkObj)
+                {
+                    if (founded && list != null)
+                    {
+                        removed = list.Remove(loopDetectId);
+                        if (list.Count == 0)
+                        {
+                            fullRemoved = LoopDetectActions.Remove(actionName, out var removedItem);
+                        }
+                    }
+                    return (removed || fullRemoved);
+                }
+            }
         }
     }
 }

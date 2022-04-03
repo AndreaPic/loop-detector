@@ -35,11 +35,11 @@ namespace DistributedLoopDetector
         protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            object objHeaderLoopIds;
+            object? objHeaderLoopIds;
             var idExists = httpContextAccessor.HttpContext.Items.TryGetValue(LoopDetectorHandler.HeaderName, out objHeaderLoopIds);
-            if (idExists)
+            if (idExists && objHeaderLoopIds != null)
             {
-                string headerValue;
+                string? headerValue;
                 headerValue = objHeaderLoopIds as string;
                 if ((headerValue != null) && (!string.IsNullOrEmpty(headerValue)))
                 {
@@ -47,7 +47,7 @@ namespace DistributedLoopDetector
                 }
                 else
                 {
-                    IEnumerable<string> headerValues;
+                    IEnumerable<string>? headerValues;
                     headerValues = objHeaderLoopIds as IEnumerable<string>;
                     if ((headerValues != null) && (headerValues.Count() > 0))
                     {
