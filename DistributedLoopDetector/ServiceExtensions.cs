@@ -45,7 +45,7 @@ namespace DistributedLoopDetector
         /// </summary>
         /// <param name="app">application builder</param>
         /// <param name="applicationName">application name</param>
-        /// <returns></returns>
+        /// <returns>Configured applicaton builder</returns>
         public static IApplicationBuilder UseDistributedCacheForLoopDetector(this IApplicationBuilder app, string applicationName)
         {
             var cache = app.ApplicationServices.GetService<IDistributedCache>();

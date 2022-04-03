@@ -55,17 +55,35 @@ namespace DistributedLoopDetector
             }
         }
 
+        /// <summary>
+        /// Optionale Distributed Memeory Cache
+        /// </summary>
         private IDistributedCache DistributedCache { get; set; }
+        /// <summary>
+        /// Application Name that use this library (used for the Cache's key)
+        /// </summary>
         private string ApplicationName { get; set; }
-        public void SetDistributedCache(IDistributedCache distributedCache,string applicationName)
+        /// <summary>
+        /// Set the cache instance to use
+        /// </summary>
+        /// <param name="distributedCache"></param>
+        /// <param name="applicationName">Application Name that use this library (used for the Cache's key)</param>
+        internal void SetDistributedCache(IDistributedCache distributedCache,string applicationName)
         {
             DistributedCache = distributedCache;
             ApplicationName = applicationName;
         }
+        /// <summary>
+        /// Retrieve the cache's current instance
+        /// </summary>
+        /// <returns>Cache instance</returns>
         private IDistributedCache GetDistributedCache()
         {
             return DistributedCache;
         }
+        /// <summary>
+        /// True if Distributed Cache use is requested
+        /// </summary>
         private bool UseDistributedCache
         {
             get
@@ -73,8 +91,6 @@ namespace DistributedLoopDetector
                 return DistributedCache!=null;
             }
         }
-
-
 
         /// <summary>
         /// inner dimension critical section handler
@@ -127,35 +143,6 @@ namespace DistributedLoopDetector
             }
             return false;
         }
-        /*
-        /// <summary>
-        /// Get all active loopid for a specified Action
-        /// </summary>
-        /// <param name="actionName">Action to look for</param>
-        /// <returns>active loop id list</returns>
-        internal IReadOnlyList<string> GetDetectInfo(string actionName)
-        {
-            var actionPresent = LoopDetectActions.TryGetValue(actionName, out var list);
-            if (actionPresent)
-            {
-                if (list != null)
-                {
-                    lock (synkObj)
-                    {
-                        return list.ToList();
-                    }
-                }
-                else
-                {
-                    return new List<string>();
-                }
-            }
-            else
-            {
-                return new List<string>();
-            }
-        }
-        */
 
         /// <summary>
         /// Add a new loopid for an action
