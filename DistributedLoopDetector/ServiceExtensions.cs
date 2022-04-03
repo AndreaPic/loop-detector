@@ -23,6 +23,7 @@ namespace DistributedLoopDetector
         public static IServiceCollection AddDistributedLoopDetector(this IServiceCollection services)
         {
             services.AddHttpContextAccessor() //adds http context accessor
+                .AddLogging()
                 .AddTransient<LoopDetectorHandler>() //register the handler to add current loop context 
                 .ConfigureAll<HttpClientFactoryOptions>(options => //its add loopid context inside the header in every HttpClient Calls
                 {
@@ -35,6 +36,7 @@ namespace DistributedLoopDetector
                     options.Filters.Add<LoopDetectResourceFilter>(); //if detect a loop it returns http error
                     options.Filters.Add<LoopDetectActionFilter>(); //add and remove current loop context for the current action
                 });
+            services.AddHttpClient();
             return services;
         }
 

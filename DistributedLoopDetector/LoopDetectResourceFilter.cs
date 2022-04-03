@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 
 namespace DistributedLoopDetector
 {
@@ -8,6 +9,14 @@ namespace DistributedLoopDetector
     /// </summary>
     public class LoopDetectResourceFilter : IResourceFilter
     {
+
+        private ILogger _logger;
+        //TODO: use DI constructor for Logger
+        public LoopDetectResourceFilter(ILogger<LoopDetectResourceFilter> logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         /// Do nothing
         /// </summary>
@@ -31,6 +40,16 @@ namespace DistributedLoopDetector
                     bool loopDetected = header.Value.FirstOrDefault(item => LoopDetectStack.Instance.LoopDetectInfoMatch(path, item)) != null;
                     if (loopDetected)
                     {
+                        if (context?.HttpContext?.RequestServices != null)
+                        {
+                            //var logger = context.HttpContext.RequestServices.GetService(typeof(ILogger)) as ILogger;
+                            if (_logger != null)
+                            {
+                                //TODO: use resources
+                                _logger.Log(LogLevel.Error, $"Distributed Loop Detected in: { context?.ActionDescriptor?.DisplayName }");
+                            }
+                        }
+
                         context.Result = new StatusCodeResult(508);
                     }
                 }
