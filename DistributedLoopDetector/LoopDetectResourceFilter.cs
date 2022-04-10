@@ -50,7 +50,7 @@ namespace DistributedLoopDetector
                             }
                         }
 
-                        context.Result = new StatusCodeResult(508);
+                        context!.Result = new StatusCodeResult(508);
                     }
                 }
             }            
