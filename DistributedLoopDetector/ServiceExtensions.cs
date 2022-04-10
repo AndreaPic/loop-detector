@@ -49,7 +49,14 @@ namespace DistributedLoopDetector
         public static IApplicationBuilder UseDistributedCacheForLoopDetector(this IApplicationBuilder app, string applicationName)
         {
             var cache = app.ApplicationServices.GetService<IDistributedCache>();
-            LoopDetectStack.Instance.SetDistributedCache(cache, applicationName);
+            if (cache == null)
+            {
+                throw new NullReferenceException($"{ typeof(IDistributedCache).Name } is null or not registered");
+            }
+            else
+            {
+                LoopDetectStack.Instance.SetDistributedCache(cache, applicationName);
+            }
             return app;
         }
 

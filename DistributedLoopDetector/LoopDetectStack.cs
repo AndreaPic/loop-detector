@@ -58,11 +58,11 @@ namespace DistributedLoopDetector
         /// <summary>
         /// Optionale Distributed Memeory Cache
         /// </summary>
-        private IDistributedCache DistributedCache { get; set; }
+        private IDistributedCache? DistributedCache { get; set; }
         /// <summary>
         /// Application Name that use this library (used for the Cache's key)
         /// </summary>
-        private string ApplicationName { get; set; }
+        private string? ApplicationName { get; set; }
         /// <summary>
         /// Set the cache instance to use
         /// </summary>
@@ -77,7 +77,7 @@ namespace DistributedLoopDetector
         /// Retrieve the cache's current instance
         /// </summary>
         /// <returns>Cache instance</returns>
-        private IDistributedCache GetDistributedCache()
+        private IDistributedCache? GetDistributedCache()
         {
             return DistributedCache;
         }
@@ -192,7 +192,7 @@ namespace DistributedLoopDetector
             {
                 lock (synkObj)
                 {
-                    DistributedCache.Remove(ComposeKey(actionName, loopDetectId));
+                    DistributedCache!.Remove(ComposeKey(actionName, loopDetectId));
                     return true;
                 }
             }
