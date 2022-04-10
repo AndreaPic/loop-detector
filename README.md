@@ -1,6 +1,27 @@
 # Distributed Loop
 
-What distributed loop is?
+**How to use this libray:**
+
+- Install the nuget package
+- in program.cs of your webapp add this using
+
+```C#
+using DistributedLoopDetector;
+```
+
+- in program.cs of your webapp add the instruction commented with arrow
+
+```C#
+...
+var builder = WebApplication.CreateBuilder(args);
+...
+builder.Services.AddDistributedLoopDetector(); // <--- add this line of code to activate loop detection
+...
+```
+
+When distributed loop is detected method that starts the loop will' have the HTTP 508 error status code (Loop Detected) and loop is immediately stopped.
+
+## What distributed loop is?
 
 It's like a infinite loop such
 
@@ -91,6 +112,33 @@ If your instances are on cloud, in a short time you will exausts your maximum re
 
 ## Common cases
 
+Usually the sistem born without loop problem.
+In the example below there is Service A with Method X that calls Service B Method Y, and Service D Method Z that calls Service A Method X.
+When Actor 1 invokes Method Z, Method Z calls Method X and Method X calls Methox Y.
+
+![multi instance scenario](./docs/img/DistributedLoop-Common-1.png)
+
+New implemetations on Method Y involves a new call to Method Z.
+
+![multi instance scenario](./docs/img/DistributedLoop-Common-2.png)
+
+If there aren't integration tests or there are only unit test with mockup you could be not aware of starting a distributed loop.
+
 ## Symptoms
 
-How can you
+If you have integration tests, the test of Metho Z in the previous example doesn't stops or tests goes in timeout.
+
+If you haven't integration tests but you have monitoring tools for your services, you can see an exponential incrementation of request at the same method's servivce.
+
+If you don't have monitor or alert tools you could see that your service becames more and more unresponsive and the only way to restore services is to stop one of them for at least calls timeout limit.
+
+## **Solution**
+
+This library is the solution for .net environment.
+
+## How this library works
+
+## FAQ
+
+If I'm colling services that doesn't use this library is loop detected ?
+Loop is in any case detected if other services propagate incoming http headers.
