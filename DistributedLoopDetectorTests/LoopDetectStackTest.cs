@@ -46,7 +46,7 @@ namespace DistributedLoopDetectorTests
         }
 
 
-        private void Check(object? state)
+        private void Check(object state)
         {
             string key = (string)state;
             LoopDetectStack.Instance.AddLoopDetectInfo("actionName", key);
@@ -58,25 +58,25 @@ namespace DistributedLoopDetectorTests
             Assert.False(match);
         }
 
-        private void Add(object? state)
+        private void Add(object state)
         {
             string key = (string)state;
             LoopDetectStack.Instance.AddLoopDetectInfo("actionName", key);
         }
 
-        private void Exists(Task t, object? state)
+        private void Exists(Task t, object state)
         {
             string key = (string)state;
             var match = LoopDetectStack.Instance.LoopDetectInfoMatch("actionName", key);
             Assert.True(match);
         }
-        private void NotExists(Task t, object? state)
+        private void NotExists(Task t, object state)
         {
             string key = (string)state;
             var match = LoopDetectStack.Instance.LoopDetectInfoMatch("actionName", key);
             Assert.False(match);
         }
-        private void Remove(Task t, object? state)
+        private void Remove(Task t, object state)
         {
             string key = (string)state;
             var removed = LoopDetectStack.Instance.RemoveLoopDetectInfo("actionName", key);

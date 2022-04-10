@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DistributedLoopDetector\DistributedLoopDetector.csproj" />
+    <ProjectReference Include="..\DistributedLoopDetector\SPS.DistributedLoopDetector.csproj" />
   </ItemGroup>
 
 </Project>
