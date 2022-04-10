@@ -7,18 +7,20 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<VersionPrefix>1.0.0</VersionPrefix>
-	<VersionSuffix>-beta</VersionSuffix>
+	<VersionSuffix>beta</VersionSuffix>
+	<PackageId>SPS.DistributedLoopDetector</PackageId>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	<Authors>Andrea Piccioni</Authors>
 	<Company>Studio Progettazione Software</Company>
 	<PackageTags>asp.net,asp.net core, dotnet, .net core, csharp, api, rest, http</PackageTags>
 	<RepositoryUrl>https://github.com/AndreaPic/loop-detector</RepositoryUrl>
 	<RepositoryType>git</RepositoryType>
-	<Description>With this library you can send and recevice messages to Azure Service Bus without the size limit of 256Kb or 1Mb</Description>
+	<Description>This library handle distributed loop, detect and stop infinite distributed loop</Description>
 	<Copyright />
 	<Title>Distributed Loop Detector</Title>
 	<PackageReleaseNotes>
-		  - First beta version
-		  - Please look at github documentations
+- First beta version
+- Please look at github documentations
 	</PackageReleaseNotes>
   </PropertyGroup>
 

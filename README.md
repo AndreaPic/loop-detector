@@ -10,7 +10,7 @@ If you don't know what distributed loop is beleow there is documentation about i
 
 **How to use this libray:**
 
-- Install the nuget package
+- Install the nuget package "SPS.DistributedLoopDetector"
 - in program.cs of your webapp add this using
 
 ```C#
