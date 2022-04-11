@@ -169,8 +169,8 @@ var builder = WebApplication.CreateBuilder(args);
 //...
 builder.Services.AddDistributedLoopDetector(); // <----- Add Distributed Loop Detection
 
-builder.Services.AddDistributedMemoryCache(); // <----- configure distributed memeory cache as usuale in asp.net 
-builder.Services.AddStackExchangeRedisCache(options => // <----- <----- configure distributed memeory cache as usuale in asp.net 
+builder.Services.AddDistributedMemoryCache(); // <----- configure distributed memeory cache as usual in asp.net 
+builder.Services.AddStackExchangeRedisCache(options => // <----- configure distributed memeory cache as usual in asp.net 
 { 
     options.Configuration = builder.Configuration.GetConnectionString("MyRedisConStr");
     options.InstanceName = "redis-andrea-dev-weu-001";
