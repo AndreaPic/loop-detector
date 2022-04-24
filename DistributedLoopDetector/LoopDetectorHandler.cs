@@ -26,6 +26,7 @@ namespace DistributedLoopDetector
         /// Header Name
         /// </summary>
         internal const string HeaderName = "X-LOOP-DETECT";
+
         /// <summary>
         /// Propagate the loop id context through the http header
         /// </summary>
@@ -55,7 +56,37 @@ namespace DistributedLoopDetector
                     }
                 }
             }
-            return await base.SendAsync(request, cancellationToken);
+            HttpResponseMessage? ret = null;
+            try
+            {                
+                ret = await base.SendAsync(request, cancellationToken);
+
+                if ((ret != null) && ((ret.StatusCode == HttpStatusCode.RequestTimeout) || (ret.StatusCode == HttpStatusCode.GatewayTimeout)))
+                {
+                    if (httpContextAccessor?.HttpContext?.Request?.Headers != null)
+                    {
+                        httpContextAccessor.HttpContext.Request.Headers.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
+                    }
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                if (httpContextAccessor?.HttpContext?.Request?.Headers != null)
+                {
+                    httpContextAccessor.HttpContext.Request.Headers.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
+                }
+                throw;
+            }
+            catch (TimeoutException)
+            {
+                if (httpContextAccessor?.HttpContext?.Request?.Headers != null)
+                {
+                    httpContextAccessor.HttpContext.Request.Headers.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
+                }
+                throw;
+            }
+
+            return ret;
         }
     }
 }

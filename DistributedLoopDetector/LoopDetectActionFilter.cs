@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Net;
 
 namespace DistributedLoopDetector
 {
@@ -52,15 +53,25 @@ namespace DistributedLoopDetector
         {
             if (context is not null)
             {
-                string path = context.HttpContext?.Request?.Path!;
-                if (path != null && loopId != null)
+                if (context.Exception is TimeoutException || context.Exception is TaskCanceledException)
                 {
-                    LoopDetectStack.Instance.RemoveLoopDetectInfo(path, loopId);
-                    if (context.HttpContext != null)
+                    return;
+                }
+                if (context?.HttpContext?.Request?.Headers != null)
+                {
+                    if (!context.HttpContext.Request.Headers.ContainsKey(HttpStatusCode.RequestTimeout.ToString()))
                     {
-                        context.HttpContext.Items.Remove(LoopDetectorHandler.HeaderName);
+                        string path = context.HttpContext?.Request?.Path!;
+                        if (path != null && loopId != null)
+                        {
+                            LoopDetectStack.Instance.RemoveLoopDetectInfo(path, loopId);
+                            if (context.HttpContext != null)
+                            {
+                                context.HttpContext.Items.Remove(LoopDetectorHandler.HeaderName);
+                            }
+                            loopId = null;
+                        }
                     }
-                    loopId = null;
                 }
             }
         }
