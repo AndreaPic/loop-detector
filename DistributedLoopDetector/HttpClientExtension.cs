@@ -2118,7 +2118,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     The request failed due to timeout.
         public static HttpResponseMessage SendDLoopD(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
             HttpResponseMessage? ret;
             try
             {
@@ -2192,7 +2192,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     The request failed due to timeout.
         public static HttpResponseMessage SendDLoopD(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, HttpCompletionOption completionOption, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
             HttpResponseMessage? ret;
             try
             {
@@ -2270,7 +2270,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     exception nests the System.TimeoutException: The request failed due to timeout.
         public static HttpResponseMessage SendDLoopD(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
             HttpResponseMessage? ret;
             try
             {
@@ -2343,7 +2343,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     exception nests the System.TimeoutException: The request failed due to timeout.
         public static HttpResponseMessage SendDLoopD(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
             HttpResponseMessage? ret;
             try
             {
@@ -2403,7 +2403,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> SendDLoopDAsync(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
             HttpResponseMessage? ret;
             try
             {
@@ -2467,7 +2467,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> SendDLoopDAsync(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, HttpCompletionOption completionOption, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
             HttpResponseMessage? ret;
             try
             {
@@ -2534,7 +2534,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> SendDLoopDAsync(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
             HttpResponseMessage? ret;
             try
             {
@@ -2597,7 +2597,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> SendDLoopDAsync(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
             HttpResponseMessage? ret;
             try
             {
