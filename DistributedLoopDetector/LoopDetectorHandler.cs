@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using System.Net.Http.Headers;
 
 namespace DistributedLoopDetector
 {
@@ -26,6 +27,7 @@ namespace DistributedLoopDetector
         /// Header Name
         /// </summary>
         internal const string HeaderName = "X-LOOP-DETECT";
+
         /// <summary>
         /// Propagate the loop id context through the http header
         /// </summary>
@@ -36,26 +38,67 @@ namespace DistributedLoopDetector
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
             object? objHeaderLoopIds;
-            var idExists = httpContextAccessor.HttpContext.Items.TryGetValue(LoopDetectorHandler.HeaderName, out objHeaderLoopIds);
-            if (idExists && objHeaderLoopIds != null)
+            objHeaderLoopIds = GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
+            HttpResponseMessage? ret = null;
+            try
             {
-                string? headerValue;
-                headerValue = objHeaderLoopIds as string;
-                if ((headerValue != null) && (!string.IsNullOrEmpty(headerValue)))
+                ret = await base.SendAsync(request, cancellationToken);
+
+                if ((ret != null) && ((ret.StatusCode == HttpStatusCode.RequestTimeout) || (ret.StatusCode == HttpStatusCode.GatewayTimeout)))
                 {
-                    request.Headers.Add(HeaderName, headerValue);
-                }
-                else
-                {
-                    IEnumerable<string>? headerValues;
-                    headerValues = objHeaderLoopIds as IEnumerable<string>;
-                    if ((headerValues != null) && (headerValues.Count() > 0))
+                    if (httpContextAccessor?.HttpContext?.Items != null)
                     {
-                        request.Headers.Add(HeaderName, headerValues.ToList());
+                        httpContextAccessor.HttpContext.Items.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
                     }
                 }
             }
-            return await base.SendAsync(request, cancellationToken);
+            catch (TaskCanceledException)
+            {
+                if (httpContextAccessor?.HttpContext?.Items != null)
+                {
+                    httpContextAccessor.HttpContext.Items.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
+                }
+                throw;
+            }
+            catch (TimeoutException)
+            {
+                if (httpContextAccessor?.HttpContext?.Items != null)
+                {
+                    httpContextAccessor.HttpContext.Items.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
+                }
+                throw;
+            }
+
+            return ret!;
+        }
+
+        internal static object? GetLoopIdFromItemsAddToHeader(HttpRequestHeaders requestHeaders, IHttpContextAccessor httpContextAccessor)
+        {
+            object? objHeaderLoopIds = null;
+            if ((httpContextAccessor?.HttpContext?.Items != null) && (requestHeaders!=null))
+            {
+                var idExists = httpContextAccessor.HttpContext.Items.TryGetValue(LoopDetectorHandler.HeaderName, out objHeaderLoopIds);
+                if (idExists && objHeaderLoopIds != null)
+                {
+                    string? headerValue;
+                    headerValue = objHeaderLoopIds as string;
+                    if ((headerValue != null) && (!string.IsNullOrEmpty(headerValue)))
+                    {
+                        requestHeaders.Add(HeaderName, headerValue);
+                    }
+                    else
+                    {
+                        IEnumerable<string>? headerValues;
+                        headerValues = objHeaderLoopIds as IEnumerable<string>;
+                        if ((headerValues != null) && (headerValues.Count() > 0))
+                        {
+                            requestHeaders.Add(HeaderName, headerValues.ToList());
+                        }
+                    }
+                }
+            }
+
+            return objHeaderLoopIds;
         }
     }
 }
