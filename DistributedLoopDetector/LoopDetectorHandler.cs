@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using System.Net.Http.Headers;
 
 namespace DistributedLoopDetector
 {
@@ -37,56 +38,67 @@ namespace DistributedLoopDetector
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
             object? objHeaderLoopIds;
-            var idExists = httpContextAccessor.HttpContext.Items.TryGetValue(LoopDetectorHandler.HeaderName, out objHeaderLoopIds);
-            if (idExists && objHeaderLoopIds != null)
-            {
-                string? headerValue;
-                headerValue = objHeaderLoopIds as string;
-                if ((headerValue != null) && (!string.IsNullOrEmpty(headerValue)))
-                {
-                    request.Headers.Add(HeaderName, headerValue);
-                }
-                else
-                {
-                    IEnumerable<string>? headerValues;
-                    headerValues = objHeaderLoopIds as IEnumerable<string>;
-                    if ((headerValues != null) && (headerValues.Count() > 0))
-                    {
-                        request.Headers.Add(HeaderName, headerValues.ToList());
-                    }
-                }
-            }
+            objHeaderLoopIds = GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
             HttpResponseMessage? ret = null;
             try
-            {                
+            {
                 ret = await base.SendAsync(request, cancellationToken);
 
                 if ((ret != null) && ((ret.StatusCode == HttpStatusCode.RequestTimeout) || (ret.StatusCode == HttpStatusCode.GatewayTimeout)))
                 {
-                    if (httpContextAccessor?.HttpContext?.Request?.Headers != null)
+                    if (httpContextAccessor?.HttpContext?.Items != null)
                     {
-                        httpContextAccessor.HttpContext.Request.Headers.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
+                        httpContextAccessor.HttpContext.Items.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
                     }
                 }
             }
             catch (TaskCanceledException)
             {
-                if (httpContextAccessor?.HttpContext?.Request?.Headers != null)
+                if (httpContextAccessor?.HttpContext?.Items != null)
                 {
-                    httpContextAccessor.HttpContext.Request.Headers.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
+                    httpContextAccessor.HttpContext.Items.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
                 }
                 throw;
             }
             catch (TimeoutException)
             {
-                if (httpContextAccessor?.HttpContext?.Request?.Headers != null)
+                if (httpContextAccessor?.HttpContext?.Items != null)
                 {
-                    httpContextAccessor.HttpContext.Request.Headers.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
+                    httpContextAccessor.HttpContext.Items.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
                 }
                 throw;
             }
 
             return ret!;
+        }
+
+        internal static object? GetLoopIdFromItemsAddToHeader(HttpRequestHeaders requestHeaders, IHttpContextAccessor httpContextAccessor)
+        {
+            object? objHeaderLoopIds = null;
+            if ((httpContextAccessor?.HttpContext?.Items != null) && (requestHeaders!=null))
+            {
+                var idExists = httpContextAccessor.HttpContext.Items.TryGetValue(LoopDetectorHandler.HeaderName, out objHeaderLoopIds);
+                if (idExists && objHeaderLoopIds != null)
+                {
+                    string? headerValue;
+                    headerValue = objHeaderLoopIds as string;
+                    if ((headerValue != null) && (!string.IsNullOrEmpty(headerValue)))
+                    {
+                        requestHeaders.Add(HeaderName, headerValue);
+                    }
+                    else
+                    {
+                        IEnumerable<string>? headerValues;
+                        headerValues = objHeaderLoopIds as IEnumerable<string>;
+                        if ((headerValues != null) && (headerValues.Count() > 0))
+                        {
+                            requestHeaders.Add(HeaderName, headerValues.ToList());
+                        }
+                    }
+                }
+            }
+
+            return objHeaderLoopIds;
         }
     }
 }

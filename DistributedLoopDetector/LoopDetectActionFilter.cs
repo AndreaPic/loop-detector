@@ -57,9 +57,10 @@ namespace DistributedLoopDetector
                 {
                     return;
                 }
-                if (context?.HttpContext?.Request?.Headers != null)
+                
+                if (context?.HttpContext?.Items != null)
                 {
-                    if (!context.HttpContext.Request.Headers.ContainsKey(HttpStatusCode.RequestTimeout.ToString()))
+                    if (!context.HttpContext.Items.ContainsKey(HttpStatusCode.RequestTimeout.ToString()))
                     {
                         string path = context.HttpContext?.Request?.Path!;
                         if (path != null && loopId != null)
