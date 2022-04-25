@@ -142,8 +142,7 @@ If you don't have monitor or alert tools you could see that your service becames
 
 ## FAQ
 
-- If I'm calling services that doesn't use this library is loop detected ?
-
+- **If I'm calling services that doesn't use this library is loop detected ?**
     > Loop is detected in any case when other services propagate incoming http headers.
 Below an example of automatic headers propagations handled by asp.net ([follow this link for complete documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-6.0#header-propagation-middleware))
 
@@ -158,8 +157,7 @@ app.UseHeaderPropagation();
 //...
 ```
 
-- It works when a service is replicated on more than once instance?
-
+- **It works when a service is replicated on more than once instance?**
     > Yes, when this component is used in the simpliest way, in the worst case, loop will be stopped after instance quantity +1 loop, if is used with distributed memeory cache loop will be stopped at the first cicle.
     If you need to use distirbuted memory cache follow the example below:
 
@@ -181,4 +179,38 @@ var app = builder.Build();
 app.UseDistributedCacheForLoopDetector("andrea-dev-italy"); // <----- add distributed memory cache to loop detection, use the name of your servie or webapp
 //...
 app.Run();
+```
+
+- **Is possible to use this solution without HttpClientFactory?**
+    >Yes, anyway you have to:
+
+- Install the nuget package "SPS.DistributedLoopDetector"
+- in program.cs of your webapp add this using
+
+```C#
+using DistributedLoopDetector;
+```
+
+- in program.cs of your webapp add the instruction commented with arrow
+
+```C#
+//...
+var builder = WebApplication.CreateBuilder(args);
+//...
+builder.Services.AddDistributedLoopDetector(); // <--- add this line of code to activate loop detection
+//...
+```
+
+- Instead of use HttpClient methods you have to use extensions available in the namespace "SPS.DistributedLoopDetector.Extensions".
+
+- Add this using
+
+```C#
+using SPS.DistributedLoopDetector.Extensions;
+```
+
+- Use extension methods that contains DLoopD, for example use SendDLoopDAsync instead of SendAsync.
+
+```C#
+var httpResponseMessage = await httpClient.SendDLoopDAsync(httpRequestMessage, httpContextAccessor);
 ```
