@@ -86,7 +86,7 @@ namespace DistributedLoopDetector
                 throw;
             }
 
-            return ret;
+            return ret!;
         }
     }
 }

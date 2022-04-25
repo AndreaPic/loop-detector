@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -729,9 +730,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //
         // Returns:
         //     The task object representing the asynchronous operation.
-        public Task<HttpResponseMessage> PatchAsync(string? requestUri, HttpContent? content)
+        public static async Task<HttpResponseMessage> PatchDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, HttpContent? content)
         {
-            throw null;
+            return await httpClient.PatchAsync(requestUri, content);
         }
 
         //
@@ -752,9 +753,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //
         // Returns:
         //     The task object representing the asynchronous operation.
-        public Task<HttpResponseMessage> PatchAsync(string? requestUri, HttpContent? content, CancellationToken cancellationToken)
+        public static async Task<HttpResponseMessage> PatchDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, HttpContent? content, CancellationToken cancellationToken)
         {
-            throw null;
+            return await httpClient.PatchAsync(requestUri, content, cancellationToken);
         }
 
         //
@@ -770,9 +771,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //
         // Returns:
         //     The task object representing the asynchronous operation.
-        public Task<HttpResponseMessage> PatchAsync(Uri? requestUri, HttpContent? content)
+        public static async Task<HttpResponseMessage> PatchDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, HttpContent? content)
         {
-            throw null;
+            return await httpClient.PatchAsync(requestUri, content);
         }
 
         //
@@ -792,9 +793,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //
         // Returns:
         //     The task object representing the asynchronous operation.
-        public Task<HttpResponseMessage> PatchAsync(Uri? requestUri, HttpContent? content, CancellationToken cancellationToken)
+        public static async Task<HttpResponseMessage> PatchDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, HttpContent? content, CancellationToken cancellationToken)
         {
-            throw null;
+            return await httpClient.PatchAsync(requestUri, content, cancellationToken);
         }
 
         //
@@ -950,9 +951,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //
         //   T:System.Threading.Tasks.TaskCanceledException:
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
-        public Task<HttpResponseMessage> PutAsync(string? requestUri, HttpContent? content)
+        public static async Task<HttpResponseMessage> PutDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, HttpContent? content)
         {
-            throw null;
+            return await httpClient.PutAsync(requestUri, content);
         }
 
         //
@@ -984,9 +985,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //
         //   T:System.Threading.Tasks.TaskCanceledException:
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
-        public Task<HttpResponseMessage> PutAsync(string? requestUri, HttpContent? content, CancellationToken cancellationToken)
+        public static async Task<HttpResponseMessage> PutDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, HttpContent? content, CancellationToken cancellationToken)
         {
-            throw null;
+            return await httpClient.PutAsync(requestUri, content, cancellationToken);
         }
 
         //
@@ -1014,9 +1015,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //
         //   T:System.Threading.Tasks.TaskCanceledException:
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
-        public Task<HttpResponseMessage> PutAsync(Uri? requestUri, HttpContent? content)
+        public static async Task<HttpResponseMessage> PutDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, HttpContent? content)
         {
-            throw null;
+            return await httpClient.PutAsync(requestUri, content);
         }
 
         //
@@ -1048,9 +1049,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //
         //   T:System.Threading.Tasks.TaskCanceledException:
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
-        public Task<HttpResponseMessage> PutAsync(Uri? requestUri, HttpContent? content, CancellationToken cancellationToken)
+        public static async Task<HttpResponseMessage> PutDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, HttpContent? content, CancellationToken cancellationToken)
         {
-            throw null;
+            return await httpClient.PutAsync(requestUri, content, cancellationToken);
         }
 
         //
@@ -1087,9 +1088,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     If the System.Threading.Tasks.TaskCanceledException exception nests the System.TimeoutException:
         //     The request failed due to timeout.
         [UnsupportedOSPlatform("browser")]
-        public HttpResponseMessage Send(HttpRequestMessage request)
+        public static HttpResponseMessage SendDLoopD(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request)
         {
-            throw null;
+            return httpClient.Send(request);
         }
 
         //
@@ -1130,9 +1131,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     If the System.Threading.Tasks.TaskCanceledException exception nests the System.TimeoutException:
         //     The request failed due to timeout.
         [UnsupportedOSPlatform("browser")]
-        public HttpResponseMessage Send(HttpRequestMessage request, HttpCompletionOption completionOption)
+        public static HttpResponseMessage SendDLoopD(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, HttpCompletionOption completionOption)
         {
-            throw null;
+            return httpClient.Send(request, completionOption);
         }
 
         //
@@ -1177,9 +1178,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     The request was canceled. -or- If the System.Threading.Tasks.TaskCanceledException
         //     exception nests the System.TimeoutException: The request failed due to timeout.
         [UnsupportedOSPlatform("browser")]
-        public HttpResponseMessage Send(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken)
+        public static HttpResponseMessage SendDLoopD(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken)
         {
-            throw null;
+            return httpClient.Send(request, completionOption, cancellationToken);
         }
 
         //
@@ -1219,9 +1220,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     The request was canceled. -or- If the System.Threading.Tasks.TaskCanceledException
         //     exception nests the System.TimeoutException: The request failed due to timeout.
         [UnsupportedOSPlatform("browser")]
-        public override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
+        public static HttpResponseMessage SendDLoopD(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            throw null;
+            return httpClient.Send(request, cancellationToken);
         }
 
         //
@@ -1248,9 +1249,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //
         //   T:System.Threading.Tasks.TaskCanceledException:
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
-        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+        public static async Task<HttpResponseMessage> SendDLoopDAsync(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request)
         {
-            throw null;
+            return await httpClient.SendAsync(request);
         }
 
         //
@@ -1281,9 +1282,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //
         //   T:System.Threading.Tasks.TaskCanceledException:
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
-        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption)
+        public static async Task<HttpResponseMessage> SendDLoopDAsync(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, HttpCompletionOption completionOption)
         {
-            throw null;
+            return await httpClient.SendAsync(request, completionOption);
         }
 
         //
@@ -1317,9 +1318,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //
         //   T:System.Threading.Tasks.TaskCanceledException:
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
-        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken)
+        public static async Task<HttpResponseMessage> SendDLoopDAsync(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken)
         {
-            throw null;
+            return await httpClient.SendAsync(request, completionOption, cancellationToken);
         }
 
         //
@@ -1349,9 +1350,9 @@ namespace SPS.DistributedLoopDetector.Extensions
         //
         //   T:System.Threading.Tasks.TaskCanceledException:
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
-        public override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public static async Task<HttpResponseMessage> SendDLoopDAsync(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            throw null;
+            return await httpClient.SendAsync(request, cancellationToken);
         }
 
     }
