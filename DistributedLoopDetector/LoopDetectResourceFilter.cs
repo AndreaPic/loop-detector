@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 
 namespace DistributedLoopDetector
 {
@@ -36,8 +37,8 @@ namespace DistributedLoopDetector
                 string? path = context.HttpContext?.Request?.Path;
                 if ((headers != null) && (!string.IsNullOrEmpty(path)))
                 {
-                    var header = headers.FirstOrDefault(head => head.Key == LoopDetectorHandler.HeaderName);
-                    bool loopDetected = header.Value.FirstOrDefault(item => LoopDetectStack.Instance.LoopDetectInfoMatch(path, item)) != null;
+                    var header = headers.FirstOrDefault(head => head.Key == LoopDetectorHandler.HeaderName);                    
+                    bool loopDetected = header.Value.Any(stringValue => LoopDetectStack.Instance.LoopDetectInfoMatch(path, stringValue));
                     if (loopDetected)
                     {
                         if (context?.HttpContext?.RequestServices != null)
@@ -51,6 +52,10 @@ namespace DistributedLoopDetector
                         }
 
                         context!.Result = new StatusCodeResult(508);
+                    }
+                    else
+                    {
+                        _logger.Log(LogLevel.Warning, $"Loop Not Foud for {header.Value}");
                     }
                 }
             }            

@@ -8,21 +8,22 @@ namespace DistributedLoopDetector
     /// <summary>
     /// Add the current loop id context to the header for the http calls
     /// </summary>
-    public class LoopDetectorHandler : DelegatingHandler
+    public partial class LoopDetectorHandler : DelegatingHandler
     {
-        /// <summary>
-        /// Current http context accessor
-        /// </summary>
-        private IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
-        /// Constructor for the DI
-        /// </summary>
-        /// <param name="contextAccessor">Required context accessor</param>
-        public LoopDetectorHandler(IHttpContextAccessor contextAccessor)
-        {
-            httpContextAccessor = contextAccessor;
+        private IDictionary<object, object> items;
+        private IDictionary<object, object> Items 
+        { 
+            get
+            {
+                return GetItems();
+            }
+            set
+            {
+                items = value;
+            }
         }
+
+
         /// <summary>
         /// Header Name
         /// </summary>
@@ -38,7 +39,11 @@ namespace DistributedLoopDetector
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
             object? objHeaderLoopIds;
-            objHeaderLoopIds = GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
+            if (Items==null)
+            {
+                throw new ArgumentNullException("Items");
+            }
+            objHeaderLoopIds = GetLoopIdFromItemsAddToHeader(request.Headers, Items);
             HttpResponseMessage? ret = null;
             try
             {
@@ -46,25 +51,25 @@ namespace DistributedLoopDetector
 
                 if ((ret != null) && ((ret.StatusCode == HttpStatusCode.RequestTimeout) || (ret.StatusCode == HttpStatusCode.GatewayTimeout)))
                 {
-                    if (httpContextAccessor?.HttpContext?.Items != null)
+                    if (Items != null)
                     {
-                        httpContextAccessor.HttpContext.Items.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
+                        Items.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
                     }
                 }
             }
             catch (TaskCanceledException)
             {
-                if (httpContextAccessor?.HttpContext?.Items != null)
+                if (Items != null)
                 {
-                    httpContextAccessor.HttpContext.Items.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
+                    Items.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
                 }
                 throw;
             }
             catch (TimeoutException)
             {
-                if (httpContextAccessor?.HttpContext?.Items != null)
+                if (Items != null)
                 {
-                    httpContextAccessor.HttpContext.Items.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
+                    Items.TryAdd(HttpStatusCode.RequestTimeout.ToString(), true.ToString());
                 }
                 throw;
             }
@@ -72,18 +77,28 @@ namespace DistributedLoopDetector
             return ret!;
         }
 
-        internal static object? GetLoopIdFromItemsAddToHeader(HttpRequestHeaders requestHeaders, IHttpContextAccessor httpContextAccessor)
+        internal static object? GetLoopIdFromItemsAddToHeader(HttpRequestHeaders requestHeaders, IDictionary<object, object> items)
         {
             object? objHeaderLoopIds = null;
-            if ((httpContextAccessor?.HttpContext?.Items != null) && (requestHeaders!=null))
+            if ((items != null) && (requestHeaders!=null))
             {
-                var idExists = httpContextAccessor.HttpContext.Items.TryGetValue(LoopDetectorHandler.HeaderName, out objHeaderLoopIds);
-                if (idExists && objHeaderLoopIds != null)
+
+                bool aquired = false;
+                int count = 0;
+                do
+                {
+                    aquired = items.TryGetValue(LoopDetectorHandler.HeaderName, out objHeaderLoopIds);
+                    count++;
+                }
+                while (!aquired && count < 3);
+
+                if (aquired && objHeaderLoopIds != null)
                 {
                     string? headerValue;
                     headerValue = objHeaderLoopIds as string;
                     if ((headerValue != null) && (!string.IsNullOrEmpty(headerValue)))
                     {
+                        System.Diagnostics.Debug.WriteLine($"TO HEADER: {HeaderName}-{headerValue}");
                         requestHeaders.Add(HeaderName, headerValue);
                     }
                     else
@@ -92,7 +107,10 @@ namespace DistributedLoopDetector
                         headerValues = objHeaderLoopIds as IEnumerable<string>;
                         if ((headerValues != null) && (headerValues.Count() > 0))
                         {
-                            requestHeaders.Add(HeaderName, headerValues.ToList());
+                            foreach (string item in headerValues)
+                            {
+                                requestHeaders.Add(HeaderName, item);
+                            }
                         }
                     }
                 }
