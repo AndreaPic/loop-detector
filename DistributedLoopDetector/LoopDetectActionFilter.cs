@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Primitives;
 using System.Net;
 
 namespace DistributedLoopDetector
@@ -32,13 +33,25 @@ namespace DistributedLoopDetector
                     LoopDetectStack.Instance.AddLoopDetectInfo(path, loopId);
                     context.HttpContext.Items.Add(LoopDetectorHandler.HeaderName, loopId);
                     context.HttpContext.Request.Headers.Add(LoopDetectorHandler.HeaderName, loopId);
+
+                    System.Diagnostics.Debug.WriteLine($"WAITHING FOR NEW: {loopId}");
+
                 }
                 else
                 {
-                    context.HttpContext.Request.Headers.TryGetValue(LoopDetectorHandler.HeaderName, out var objLoopId);
+                    int count = 0;
+                    bool acquired = false;
+                    StringValues objLoopId;
+                    do
+                    {
+                        acquired = context.HttpContext.Request.Headers.TryGetValue(LoopDetectorHandler.HeaderName, out objLoopId);
+                        count++;
+                    } 
+                    while (!acquired && count < 3);
                     LoopDetectStack.Instance.AddLoopDetectInfo(path, objLoopId);
                     loopId = objLoopId;
                     context.HttpContext.Items.Add(LoopDetectorHandler.HeaderName, objLoopId);
+                    System.Diagnostics.Debug.WriteLine($"WAITHING FOR READED: {loopId}");
                 }
             }
         }

@@ -8,7 +8,7 @@ Below there are the instructions to use this library.
 
 If you don't know what distributed loop is beleow there is documentation about it.
 
-**How to use this libray:**
+### How to use this libray in asp.net core
 
 - Install the nuget package "SPS.DistributedLoopDetector"
 - in program.cs of your webapp add this using
@@ -24,6 +24,65 @@ using DistributedLoopDetector;
 var builder = WebApplication.CreateBuilder(args);
 //...
 builder.Services.AddDistributedLoopDetector(); // <--- add this line of code to activate loop detection
+//...
+```
+
+You must use IHttpClientFactory to create HttpClient and do http calls
+
+When distributed loop is detected, method that starts the loop will has the HTTP 508 error status code (Loop Detected) and loop will be immediately stopped.
+
+### How to use this libray in Azure Function
+
+- Install the nuget package "SPS.DistributedLoopDetectorFunc" (in beta version right now)
+- in program.cs of your webapp add this using
+
+```C#
+using SPS.DistributedLoopDetectorFunc;
+```
+
+- in program.cs of your webapp add the instruction commented with arrow
+
+```C#
+//...
+var host = new HostBuilder()
+
+    .ConfigureFunctionsWorkerDefaults(workerApplication =>
+    {
+        // Register our custom middlewares with the worker
+        workerApplication.UseDistributedLoopDetector();
+    })    
+    .ConfigureServices(services => services.AddFuncDistributedLoopDetector()) //<-- Add services.AddFuncDistributedLoopDetector()
+    .Build();
+//...
+```
+
+- Create constructor for you function that require IHttpClientFactory like example below
+
+```C#
+//...
+private readonly IHttpClientFactory _httpClientFactory;
+public FunctionDLoopD(ILoggerFactory loggerFactory, IHttpClientFactory httpClientFactory)
+{
+    _logger = loggerFactory.CreateLogger<FunctionDLoopD>();
+    _httpClientFactory = httpClientFactory;
+}
+//...
+```
+
+- Use IHttpClientFactory to make http calls
+
+```C#
+//...
+        [Function("DistributedLoopFunction")]
+        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req, FunctionContext functionContext)
+        {
+                var httpRequestMessage = new HttpRequestMessage(
+                            HttpMethod.Get,
+                            "https://localhost:7144/api/Ping/Ping");
+
+                var httpClient = _httpClientFactory.CreateClient();
+                var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+
 //...
 ```
 

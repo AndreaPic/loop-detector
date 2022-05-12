@@ -25,6 +25,7 @@ namespace DistributedLoopDetector
             services.AddHttpContextAccessor() //adds http context accessor
                 .AddLogging()
                 .AddTransient<LoopDetectorHandler>() //register the handler to add current loop context 
+                .AddSingleton<LoopDetectStackInstance>()
                 .ConfigureAll<HttpClientFactoryOptions>(options => //its add loopid context inside the header in every HttpClient Calls
                 {
                     options.HttpMessageHandlerBuilderActions.Add(builder =>
