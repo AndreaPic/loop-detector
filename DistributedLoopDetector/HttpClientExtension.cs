@@ -37,7 +37,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> DeleteDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -100,7 +100,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> DeleteDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -159,7 +159,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> DeleteDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -223,7 +223,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> DeleteDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -281,7 +281,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> GetDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -344,7 +344,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> GetDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, HttpCompletionOption completionOption, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -411,7 +411,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> GetDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, HttpCompletionOption completionOption, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -474,7 +474,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> GetDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -532,7 +532,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> GetDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -595,7 +595,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> GetDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, HttpCompletionOption completionOption, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -662,7 +662,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> GetDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, HttpCompletionOption completionOption, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -725,7 +725,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> GetDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -784,7 +784,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<byte[]> GetByteArrayDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             byte[]? ret;
             try
             {
@@ -835,7 +835,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<byte[]> GetByteArrayDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             byte[]? ret;
             try
             {
@@ -886,7 +886,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<byte[]> GetByteArrayDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             byte[]? ret;
             try
             {
@@ -937,7 +937,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<byte[]> GetByteArrayDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             byte[]? ret;
             try
             {
@@ -989,7 +989,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<Stream> GetStreamDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             Stream? ret;
             try
             {
@@ -1032,7 +1032,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     The task object representing the asynchronous operation.
         public static async Task<Stream> GetStreamDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             Stream? ret;
             try
             {
@@ -1083,7 +1083,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<Stream> GetStreamDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             Stream? ret;
             try
             {
@@ -1137,7 +1137,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<Stream> GetStreamDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             Stream? ret;
             try
             {
@@ -1188,7 +1188,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<string> GetStringDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             string? ret;
             try
             {
@@ -1242,7 +1242,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<string> GetStringDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             string? ret;
             try
             {
@@ -1293,7 +1293,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<string> GetStringDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             string? ret;
             try
             {
@@ -1347,7 +1347,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<string> GetStringDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             string? ret;
             try
             {
@@ -1388,7 +1388,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     The task object representing the asynchronous operation.
         public static async Task<HttpResponseMessage> PatchDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, HttpContent? content, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -1442,7 +1442,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     The task object representing the asynchronous operation.
         public static async Task<HttpResponseMessage> PatchDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, HttpContent? content, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -1491,7 +1491,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     The task object representing the asynchronous operation.
         public static async Task<HttpResponseMessage> PatchDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, HttpContent? content, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -1544,7 +1544,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     The task object representing the asynchronous operation.
         public static async Task<HttpResponseMessage> PatchDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, HttpContent? content, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -1605,7 +1605,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> PostDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, HttpContent? content, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -1670,7 +1670,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> PostDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, HttpContent? content, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -1731,7 +1731,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> PostDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, HttpContent? content, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -1796,7 +1796,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> PostDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, HttpContent? content, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -1857,7 +1857,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> PutDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, HttpContent? content, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -1922,7 +1922,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> PutDLoopDAsync(this System.Net.Http.HttpClient httpClient, string? requestUri, HttpContent? content, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -1983,7 +1983,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> PutDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, HttpContent? content, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -2048,7 +2048,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> PutDLoopDAsync(this System.Net.Http.HttpClient httpClient, Uri? requestUri, HttpContent? content, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(httpClient.DefaultRequestHeaders, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -2118,7 +2118,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     The request failed due to timeout.
         public static HttpResponseMessage SendDLoopD(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -2192,7 +2192,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     The request failed due to timeout.
         public static HttpResponseMessage SendDLoopD(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, HttpCompletionOption completionOption, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -2270,7 +2270,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     exception nests the System.TimeoutException: The request failed due to timeout.
         public static HttpResponseMessage SendDLoopD(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -2343,7 +2343,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     exception nests the System.TimeoutException: The request failed due to timeout.
         public static HttpResponseMessage SendDLoopD(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -2403,7 +2403,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> SendDLoopDAsync(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -2467,7 +2467,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> SendDLoopDAsync(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, HttpCompletionOption completionOption, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -2534,7 +2534,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> SendDLoopDAsync(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
@@ -2597,7 +2597,7 @@ namespace SPS.DistributedLoopDetector.Extensions
         //     .NET Core and .NET 5.0 and later only: The request failed due to timeout.
         public static async Task<HttpResponseMessage> SendDLoopDAsync(this System.Net.Http.HttpClient httpClient, HttpRequestMessage request, CancellationToken cancellationToken, IHttpContextAccessor httpContextAccessor)
         {
-            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor);
+            LoopDetectorHandler.GetLoopIdFromItemsAddToHeader(request.Headers, httpContextAccessor.HttpContext.Items);
             HttpResponseMessage? ret;
             try
             {
