@@ -10,8 +10,15 @@ namespace DistributedLoopDetector
     /// </summary>
     public partial class LoopDetectorHandler : DelegatingHandler
     {
-        private IDictionary<object, object> items;
-        private IDictionary<object, object> Items 
+        /// <summary>
+        /// key/value collection that can be used to share data within the scope of this request
+        /// </summary>
+        private IDictionary<object, object>? items;
+
+        /// <summary>
+        /// Gets or sets a key/value collection that can be used to share data within the scope of this request
+        /// </summary>
+        private IDictionary<object, object>? Items 
         { 
             get
             {
@@ -77,6 +84,12 @@ namespace DistributedLoopDetector
             return ret!;
         }
 
+        /// <summary>
+        /// Fill header with loop id info
+        /// </summary>
+        /// <param name="requestHeaders"></param>
+        /// <param name="items"></param>
+        /// <returns></returns>
         internal static object? GetLoopIdFromItemsAddToHeader(HttpRequestHeaders requestHeaders, IDictionary<object, object> items)
         {
             object? objHeaderLoopIds = null;
@@ -98,7 +111,6 @@ namespace DistributedLoopDetector
                     headerValue = objHeaderLoopIds as string;
                     if ((headerValue != null) && (!string.IsNullOrEmpty(headerValue)))
                     {
-                        System.Diagnostics.Debug.WriteLine($"TO HEADER: {HeaderName}-{headerValue}");
                         requestHeaders.Add(HeaderName, headerValue);
                     }
                     else

@@ -50,10 +50,10 @@ namespace SPS.DistributedLoopDetectorFunc
 
             var httpRequestData = await context.GetHttpRequestDataAsync();
             string? loopId = null;
-            IEnumerable<string> objLoopId = null;
+            IEnumerable<string> ?objLoopId = null;
 
-            string? path = context?.FunctionDefinition.Name; //context?.FunctionId;
-            if ((path != null) && (context != null) && (loopDetectStack != null))
+            string? path = context?.FunctionDefinition?.Name; //context?.FunctionId;
+            if ((path != null) && (context != null) && (loopDetectStack != null) && (httpRequestData!=null))
             {
 
                 if (!httpRequestData.Headers.Contains(LoopDetectorHandler.HeaderName))
@@ -70,7 +70,7 @@ namespace SPS.DistributedLoopDetectorFunc
                     var headers = httpRequestData.Headers;
                     if ((headers != null) && (!string.IsNullOrEmpty(path)))
                     {
-                        IEnumerable<string> headerValues = null;
+                        IEnumerable<string>? headerValues = null;
                         bool acquired = false;
                         int count = 0;
                         do
@@ -79,59 +79,66 @@ namespace SPS.DistributedLoopDetectorFunc
                         } 
                         while (!acquired && count < 3);
 
-                        bool loopDetected = headerValues.Any(item => loopDetectStack.LoopDetectInfoMatch(path, item));
-                        if (loopDetected)
+                        if (headerValues != null)
                         {
-                            if (context?.FunctionDefinition?.Name != null)
+                            bool loopDetected = headerValues.Any(item => loopDetectStack.LoopDetectInfoMatch(path, item));
+                            if (loopDetected)
                             {
-                                ILogger logger = context.GetLogger<FuncLoopDetectorMiddelware>();
-                                //var logger = context.HttpContext.RequestServices.GetService(typeof(ILogger)) as ILogger;
-                                if (logger != null)
+                                //if (context?.FunctionDefinition?.Name != null)
+                                //{
+                                //    //ILogger logger = context.GetLogger<FuncLoopDetectorMiddelware>();
+                                //    //var logger = context.HttpContext.RequestServices.GetService(typeof(ILogger)) as ILogger;
+                                //    //if (logger != null)
+                                //    //{
+                                //    //    //TODO: use resources
+                                //    //    logger.Log(LogLevel.Error, $"Distributed Loop Detected in: { context?.FunctionDefinition?.Name }");
+                                //    //}
+                                //}
+
+
+                                var request = context.GetHttpRequestData();
+                                if (request != null)
                                 {
-                                    //TODO: use resources
-                                    logger.Log(LogLevel.Error, $"Distributed Loop Detected in: { context?.FunctionDefinition?.Name }");
+                                    var resp = request.CreateResponse(HttpStatusCode.LoopDetected);
+                                    //await response.WriteAsJsonAsync(data);
+                                    //resp.StatusCode = statusCode;
+                                    context.SetResponseData(resp);
                                 }
+                                return;
                             }
-
-
-                            var request = context.GetHttpRequestData();
-                            if (request != null)
+                            else
                             {
-                                var resp = request.CreateResponse(HttpStatusCode.LoopDetected);
-                                //await response.WriteAsJsonAsync(data);
-                                //resp.StatusCode = statusCode;
-                                context.SetResponseData(resp);
+                                int i = 0;
+                                bool retrieved = false;
+                                do
+                                {
+                                    retrieved = httpRequestData.Headers.TryGetValues(LoopDetectorHandler.HeaderName, out objLoopId);
+                                    i++;
+                                }
+                                while (!retrieved && i < 3);
+
+                                if (objLoopId != null)
+                                {
+                                    //ILogger logger = context.GetLogger<FuncLoopDetectorMiddelware>();
+                                    foreach (var item in objLoopId)
+                                    {
+                                        loopDetectStack.AddLoopDetectInfo(path, item);
+                                        //logger.Log(LogLevel.Information, $"PROPAGATE: { item }");
+                                    }
+                                    context.Items.Add(LoopDetectorHandler.HeaderName, objLoopId);
+                                    _httpContextAccessor.HttpContext.Items.Add(LoopDetectorHandler.HeaderName, objLoopId);
+                                }
+
                             }
-                            return;
                         }
-                        else
-                        {
-                            int i = 0;
-                            bool retrieved = false;
-                            do
-                            {
-                                retrieved = httpRequestData.Headers.TryGetValues(LoopDetectorHandler.HeaderName, out objLoopId);
-                                i++;
-                            } 
-                            while (!retrieved && i < 3);
-
-                            ILogger logger = context.GetLogger<FuncLoopDetectorMiddelware>();
-                            foreach (var item in objLoopId)
-                            {
-                                loopDetectStack.AddLoopDetectInfo(path, item);
-                                logger.Log(LogLevel.Information, $"PROPAGATE: { item }");
-                            }
-                            context.Items.Add(LoopDetectorHandler.HeaderName, objLoopId);
-                            _httpContextAccessor.HttpContext.Items.Add(LoopDetectorHandler.HeaderName, objLoopId);
-
-                        }
-
                     }
 
                 }
             }
-
-            handler.SetFunctionContext(context);
+            if (context != null)
+            {
+                handler.SetFunctionContext(context);
+            }
 
 
             //try
@@ -144,7 +151,7 @@ namespace SPS.DistributedLoopDetectorFunc
                 {
                     //httpRequestData = await context.GetHttpRequestDataAsync();
 
-                    if (path != null && loopId != null)
+                    if (path != null && loopId != null && loopDetectStack!=null)
                     {
                         loopDetectStack.RemoveLoopDetectInfo(path, loopId);
                         if (context != null)

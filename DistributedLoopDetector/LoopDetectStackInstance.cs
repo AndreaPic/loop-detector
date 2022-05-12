@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace DistributedLoopDetector
 {
     /// <summary>
-    /// Stack that record every concurrent loop context
+    /// Stack loop detect info for concurrent loop context
     /// </summary>
     public sealed class LoopDetectStackInstance
     {
@@ -103,7 +103,7 @@ namespace DistributedLoopDetector
             }
             else
             {
-                HashSet<string> list = null;
+                HashSet<string>? list = null;
                 bool aquired = false;
                 int count = 0;
                 do
@@ -181,7 +181,7 @@ namespace DistributedLoopDetector
             }
             else
             {
-                HashSet<string> list = null;
+                HashSet<string>? list = null;
                 bool acquired = false;
                 int count = 0;
                 do

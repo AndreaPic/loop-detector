@@ -7,8 +7,10 @@ namespace DistributedLoopDetector
 {
     public partial class LoopDetectorHandler 
     {
-
-        private IHttpContextAccessor _contextAccessor;
+        /// <summary>
+        /// IHttpContextAccessor for asp.net
+        /// </summary>
+        private IHttpContextAccessor? _contextAccessor;
 
         /// <summary>
         /// Constructor for the DI
@@ -17,10 +19,16 @@ namespace DistributedLoopDetector
         public LoopDetectorHandler(IHttpContextAccessor contextAccessor)
         {
             _contextAccessor = contextAccessor;
-            Items = contextAccessor.HttpContext.Items;
+            Items = contextAccessor?.HttpContext?.Items;
         }
 
-        private IDictionary<object, object> GetItems()
+        /// <summary>
+        /// HttpContext's Items 
+        /// </summary>
+        /// <returns>
+        /// HttpContext's Items 
+        /// </returns>
+        private IDictionary<object, object>? GetItems()
         {
             return _contextAccessor?.HttpContext?.Items != null?_contextAccessor.HttpContext.Items:items;
         }

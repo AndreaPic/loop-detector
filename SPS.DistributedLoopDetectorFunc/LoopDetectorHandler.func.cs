@@ -10,8 +10,15 @@ namespace DistributedLoopDetector
 {
     partial class LoopDetectorHandler
     {
+        /// <summary>
+        /// HttpContext created instead of Functions
+        /// </summary>
         private HttpContext _context;
 
+        /// <summary>
+        /// Constructor that require context's IHttpContextAccessor
+        /// </summary>
+        /// <param name="contextAccessor">IHttpContextAccessor to use</param>
         public LoopDetectorHandler(IHttpContextAccessor contextAccessor)
         {
             if (contextAccessor.HttpContext == null)
@@ -28,6 +35,10 @@ namespace DistributedLoopDetector
         //    Items = context.Items;
         //}
 
+        /// <summary>
+        /// Used to force context Items on Functions
+        /// </summary>
+        /// <param name="context"></param>
         public void SetFunctionContext(FunctionContext context)
         {
             if (_context == null)
@@ -50,7 +61,13 @@ namespace DistributedLoopDetector
             }
         }
 
-        private IDictionary<object, object> GetItems()
+        /// <summary>
+        /// HttpContext's Items 
+        /// </summary>
+        /// <returns>
+        /// HttpContext's Items 
+        /// </returns>
+        private IDictionary<object, object>? GetItems()
         {
             return items;
         }

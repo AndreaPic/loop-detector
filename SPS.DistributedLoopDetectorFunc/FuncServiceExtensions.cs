@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace SPS.DistributedLoopDetectorFunc
 {
+    /// <summary>
+    /// Extension that add Loop detection to Function
+    /// </summary>
     public static class FuncServiceExtensions
     {
         /// <summary>
@@ -36,6 +39,10 @@ namespace SPS.DistributedLoopDetectorFunc
             return services;
         }
 
+        /// <summary>
+        /// Add FuncLoopDetectorMiddelware only for httpTrigger Function
+        /// </summary>
+        /// <param name="workerApplication">Current worker application</param>
         public static void UseDistributedLoopDetector(this IFunctionsWorkerApplicationBuilder workerApplication)
         {
             workerApplication.UseWhen<FuncLoopDetectorMiddelware>((context) =>
