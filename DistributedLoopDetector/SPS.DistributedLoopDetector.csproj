@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net7.0;net6.0;net5.0;netcoreapp3.1</TargetFrameworks>
 	<LangVersion>latest</LangVersion>	  
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	<VersionPrefix>1.0.1</VersionPrefix>
+	<VersionPrefix>1.7.0</VersionPrefix>
 	<VersionSuffix></VersionSuffix>
 	<PackageId>SPS.DistributedLoopDetector</PackageId>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -19,8 +19,9 @@
 	<Copyright />
 	<Title>Distributed Loop Detector</Title>
 	<PackageReleaseNotes>
-- Handle Distributed Loop issue using standard HttpClientFactory or via extension of HttpClient
-- Please look at github documentation
+	- net7
+	- Handle Distributed Loop issue using standard HttpClientFactory or via extension of HttpClient
+	- Please look at github documentation
 	</PackageReleaseNotes>
   </PropertyGroup>
 
@@ -30,7 +31,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
 	</ItemGroup>
 
 </Project>
