@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	<VersionPrefix>1.0.1</VersionPrefix>
+	<VersionPrefix>1.7.0</VersionPrefix>
 	<VersionSuffix></VersionSuffix>
 	<PackageId>SPS.DistributedLoopDetector</PackageId>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -19,8 +19,9 @@
 	<Copyright />
 	<Title>Distributed Loop Detector</Title>
 	<PackageReleaseNotes>
-- Handle Distributed Loop issue using standard HttpClientFactory or via extension of HttpClient
-- Please look at github documentation
+	- net7
+	- Handle Distributed Loop issue using standard HttpClientFactory or via extension of HttpClient
+	- Please look at github documentation
 	</PackageReleaseNotes>
   </PropertyGroup>
 
