@@ -38,7 +38,7 @@ namespace DistributedLoopDetector
                 if ((headers != null) && (!string.IsNullOrEmpty(path)))
                 {
                     var header = headers.FirstOrDefault(head => head.Key == LoopDetectorHandler.HeaderName);                    
-                    bool loopDetected = header.Value.Any(stringValue => LoopDetectStack.Instance.LoopDetectInfoMatch(path, stringValue));
+                    bool loopDetected = header.Value.Any(stringValue => stringValue != null && LoopDetectStack.Instance.LoopDetectInfoMatch(path, stringValue));
                     if (loopDetected)
                     {
                         if (context?.HttpContext?.RequestServices != null)

@@ -32,7 +32,7 @@ namespace SPS.DistributedLoopDetectorFunc
                 {
                     options.HttpMessageHandlerBuilderActions.Add(builder =>
                     {
-                        builder.AdditionalHandlers.Add(builder.Services.GetService<LoopDetectorHandler>()); //.GetRequiredService<LoopDetectorHandler>());
+                        builder.AdditionalHandlers.Add(builder.Services.GetRequiredService<LoopDetectorHandler>());
                     });
                 });
             services.AddHttpClient();

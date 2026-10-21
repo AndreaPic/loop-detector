@@ -28,7 +28,7 @@ namespace DistributedLoopDetector
         /// <returns>
         /// HttpContext's Items 
         /// </returns>
-        private IDictionary<object, object>? GetItems()
+        private IDictionary<object, object?>? GetItems()
         {
             return _contextAccessor?.HttpContext?.Items != null?_contextAccessor.HttpContext.Items:items;
         }

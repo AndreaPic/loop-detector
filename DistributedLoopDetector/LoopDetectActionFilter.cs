@@ -32,7 +32,7 @@ namespace DistributedLoopDetector
                     loopId = Guid.NewGuid().ToString("N");
                     LoopDetectStack.Instance.AddLoopDetectInfo(path, loopId);
                     context.HttpContext.Items.Add(LoopDetectorHandler.HeaderName, loopId);
-                    context.HttpContext.Request.Headers.Add(LoopDetectorHandler.HeaderName, loopId);
+                    context.HttpContext.Request.Headers[LoopDetectorHandler.HeaderName] = loopId;
 
                     System.Diagnostics.Debug.WriteLine($"WAITHING FOR NEW: {loopId}");
 
@@ -48,7 +48,7 @@ namespace DistributedLoopDetector
                         count++;
                     } 
                     while (!acquired && count < 3);
-                    LoopDetectStack.Instance.AddLoopDetectInfo(path, objLoopId);
+                    LoopDetectStack.Instance.AddLoopDetectInfo(path, objLoopId.ToString());
                     loopId = objLoopId;
                     context.HttpContext.Items.Add(LoopDetectorHandler.HeaderName, objLoopId);
                     System.Diagnostics.Debug.WriteLine($"WAITHING FOR READED: {loopId}");
