@@ -36,7 +36,16 @@ namespace DistributedLoopDetector
                 // Entries from previous library versions contain only the loop ID.
                 return new Dictionary<string, LoopRequestFingerprint?> { [LegacyRegistration] = null };
             }
-            return JsonSerializer.Deserialize<Dictionary<string, LoopRequestFingerprint?>>(value.Substring(CacheFormat.Length))!;
+try
+{
+    return JsonSerializer.Deserialize<Dictionary<string, LoopRequestFingerprint?>>(value.Substring(CacheFormat.Length))
+        ?? new Dictionary<string, LoopRequestFingerprint?>();
+}
+catch (JsonException)
+{
+    // Fail safe: treat invalid state as an older/unknown (blocking) entry.
+    return new Dictionary<string, LoopRequestFingerprint?> { [LegacyRegistration] = null };
+}
         }
 
         private void Write(string actionName, string loopDetectId, Dictionary<string, LoopRequestFingerprint?> active)
