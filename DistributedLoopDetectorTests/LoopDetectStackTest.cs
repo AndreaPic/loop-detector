@@ -87,7 +87,7 @@ namespace DistributedLoopDetectorTests
 
         [Theory]
         [InlineData(short.MaxValue)]
-        public void ThreadTest1(int threadCount)
+        public async Task ThreadTest1(int threadCount)
         {
             for(int i = 0; i < threadCount; i++)
             {
@@ -113,13 +113,13 @@ namespace DistributedLoopDetectorTests
                     Assert.Null(t.Exception);
                 }));
             }          
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks);
             Assert.True(passed);
         }
 
         [Theory]
         [InlineData(short.MaxValue)]
-        public void ThreadTest(int threadCount)
+        public async Task ThreadTest(int threadCount)
         {
             for (int i = 0; i < threadCount; i++)
             {
@@ -143,7 +143,7 @@ namespace DistributedLoopDetectorTests
                 }));
             }
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks);
             Assert.True(passed);
         }
 

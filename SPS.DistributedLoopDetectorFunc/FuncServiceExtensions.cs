@@ -22,7 +22,12 @@ namespace SPS.DistributedLoopDetectorFunc
         /// <param name="services">Current service collection</param>
         /// <returns>modified service collection</returns>
         public static IServiceCollection AddFuncDistributedLoopDetector(this IServiceCollection services)
+            => AddFuncDistributedLoopDetector(services, AcceptedLoop.None);
+
+        /// <summary>Add loop detection, allowing the selected request differences.</summary>
+        public static IServiceCollection AddFuncDistributedLoopDetector(this IServiceCollection services, AcceptedLoop acceptedLoop)
         {
+            services.AddSingleton(new LoopDetectorOptions(acceptedLoop));
             services.AddHttpContextAccessor() //adds http context accessor
                 .AddLogging()
                 //.AddScoped<LoopDetectorHandler>()
@@ -32,7 +37,7 @@ namespace SPS.DistributedLoopDetectorFunc
                 {
                     options.HttpMessageHandlerBuilderActions.Add(builder =>
                     {
-                        builder.AdditionalHandlers.Add(builder.Services.GetService<LoopDetectorHandler>()); //.GetRequiredService<LoopDetectorHandler>());
+                        builder.AdditionalHandlers.Add(builder.Services.GetRequiredService<LoopDetectorHandler>());
                     });
                 });
             services.AddHttpClient();

@@ -88,6 +88,62 @@ public FunctionDLoopD(ILoggerFactory loggerFactory, IHttpClientFactory httpClien
 
 When distributed loop is detected, method that starts the loop will has the HTTP 508 error status code (Loop Detected) and loop will be immediately stopped.
 
+### Allow loops with different request data
+
+The parameterless registrations keep the existing behaviour, equivalent to `AcceptedLoop.None`: a repeated active API in the same loop context returns HTTP 508, regardless of its payload or headers.
+
+Use the new overload to allow selected request differences in ASP.NET Core:
+
+```C#
+using DistributedLoopDetector;
+
+builder.Services.AddDistributedLoopDetector(AcceptedLoop.WithDifferentPayload);
+```
+
+Azure Functions supports the same options through its service registration. Keep the existing `UseDistributedLoopDetector()` middleware registration:
+
+```C#
+using DistributedLoopDetector;
+using SPS.DistributedLoopDetectorFunc;
+
+services.AddFuncDistributedLoopDetector(AcceptedLoop.WithDifferentHeaders);
+```
+
+`AcceptedLoop` is a flags enum:
+
+| Option | Behaviour for a repeated active API in the same loop context |
+| --- | --- |
+| `None = 0` | Return HTTP 508, preserving the default behaviour. |
+| `WithDifferentPayload = 1` | Continue if the body, route parameters, or query parameters differ from the active requests. |
+| `WithDifferentHeaders = 2` | Continue if the compared request headers differ from the active requests. |
+
+Combine both options to accept a difference in either category:
+
+```C#
+builder.Services.AddDistributedLoopDetector(
+    AcceptedLoop.WithDifferentPayload | AcceptedLoop.WithDifferentHeaders);
+
+// Equivalent configuration for Azure Functions:
+services.AddFuncDistributedLoopDetector(
+    AcceptedLoop.WithDifferentPayload | AcceptedLoop.WithDifferentHeaders);
+```
+
+The detector checks every active variation. For example, with `WithDifferentPayload`, a call with body A can call the same API with body B. If B calls that API again with body A while A is still active, the request returns HTTP 508. With both options enabled, the combination of payload and headers must differ from every active combination. Completing a variation removes only that request's registration.
+
+When a detected loop is accepted, the request continues and the detector logs a warning containing the API, loop ID, and selected option. It does not generate HTTP 508 for that accepted request. Request bodies and header values are not included in these logs; active-request storage retains SHA-256 fingerprints instead of their original content.
+
+Comparison rules:
+
+- Bodies are compared by their exact bytes. JSON formatting changes count as a different body.
+- Query parameter ordering by name does not matter. Repeated values retain their order, and values are case-sensitive.
+- Header names are case-insensitive, and their enumeration order does not matter. Header values and the order of multiple values remain significant. Adding or removing a compared header also counts as a difference.
+- `X-LOOP-DETECT`, `traceparent`, `tracestate`, `Request-Id`, `baggage`, and `Correlation-Context` are excluded from header comparison because they carry loop or tracing metadata.
+- ASP.NET keeps using the full request path as its API identity, so a different path already counts as a different API with `None`. Azure Functions keeps using the function name; payload comparison also includes its URL path and route binding data.
+
+Bodies are read and buffered only when `WithDifferentPayload` is enabled and remain available to controllers/functions. This adds body-reading and buffering costs; large bodies can use temporary files. `None` and `WithDifferentHeaders` do not read the body.
+
+The existing ASP.NET distributed-cache configuration also stores request fingerprints when these options are enabled. Entries written by earlier library versions have no fingerprints and remain blocking loops. As with the existing cache integration, `IDistributedCache` does not provide atomic operations across processes: simultaneous changes on different instances are best-effort, rather than a distributed lock.
+
 ## What distributed loop is?
 
 It's like a infinite loop such

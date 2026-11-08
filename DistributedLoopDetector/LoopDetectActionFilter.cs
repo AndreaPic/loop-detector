@@ -24,6 +24,8 @@ namespace DistributedLoopDetector
         /// </param>
         public void OnActionExecuting(ActionExecutingContext context)
         {
+            if (context?.HttpContext.Items.ContainsKey(LoopDetectResourceFilter.RegistrationKey) == true)
+                return;
             string? path = context?.HttpContext?.Request?.Path;
             if ( (path != null) && (context!=null))
             {
@@ -32,7 +34,7 @@ namespace DistributedLoopDetector
                     loopId = Guid.NewGuid().ToString("N");
                     LoopDetectStack.Instance.AddLoopDetectInfo(path, loopId);
                     context.HttpContext.Items.Add(LoopDetectorHandler.HeaderName, loopId);
-                    context.HttpContext.Request.Headers.Add(LoopDetectorHandler.HeaderName, loopId);
+                    context.HttpContext.Request.Headers[LoopDetectorHandler.HeaderName] = loopId;
 
                     System.Diagnostics.Debug.WriteLine($"WAITHING FOR NEW: {loopId}");
 
@@ -48,7 +50,7 @@ namespace DistributedLoopDetector
                         count++;
                     } 
                     while (!acquired && count < 3);
-                    LoopDetectStack.Instance.AddLoopDetectInfo(path, objLoopId);
+                    LoopDetectStack.Instance.AddLoopDetectInfo(path, objLoopId.ToString());
                     loopId = objLoopId;
                     context.HttpContext.Items.Add(LoopDetectorHandler.HeaderName, objLoopId);
                     System.Diagnostics.Debug.WriteLine($"WAITHING FOR READED: {loopId}");
@@ -64,6 +66,8 @@ namespace DistributedLoopDetector
         /// </param>
         public void OnActionExecuted(ActionExecutedContext context)
         {
+            if (context?.HttpContext.Items.ContainsKey(LoopDetectResourceFilter.RegistrationKey) == true)
+                return;
             if (context is not null)
             {
                 if (context.Exception is TimeoutException || context.Exception is TaskCanceledException)
