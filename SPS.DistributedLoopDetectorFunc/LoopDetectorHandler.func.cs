@@ -46,7 +46,7 @@ namespace DistributedLoopDetector
                 _context = new DefaultHttpContext();
             }
 
-            Items = context.Items;
+            Items = (IDictionary<object, object?>)context.Items;
             foreach (var item in Items)
             {
                 if (!_context.Items.ContainsKey(item.Key))
@@ -67,7 +67,7 @@ namespace DistributedLoopDetector
         /// <returns>
         /// HttpContext's Items 
         /// </returns>
-        private IDictionary<object, object>? GetItems()
+        private IDictionary<object, object?>? GetItems()
         {
             return items;
         }

@@ -13,12 +13,12 @@ namespace DistributedLoopDetector
         /// <summary>
         /// key/value collection that can be used to share data within the scope of this request
         /// </summary>
-        private IDictionary<object, object>? items;
+        private IDictionary<object, object?>? items;
 
         /// <summary>
         /// Gets or sets a key/value collection that can be used to share data within the scope of this request
         /// </summary>
-        private IDictionary<object, object>? Items 
+        private IDictionary<object, object?>? Items
         { 
             get
             {
@@ -90,7 +90,7 @@ namespace DistributedLoopDetector
         /// <param name="requestHeaders"></param>
         /// <param name="items"></param>
         /// <returns></returns>
-        internal static object? GetLoopIdFromItemsAddToHeader(HttpRequestHeaders requestHeaders, IDictionary<object, object> items)
+        internal static object? GetLoopIdFromItemsAddToHeader(HttpRequestHeaders requestHeaders, IDictionary<object, object?> items)
         {
             object? objHeaderLoopIds = null;
             if ((items != null) && (requestHeaders!=null))

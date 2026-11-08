@@ -13,7 +13,7 @@ namespace DistributedLoopDetector
         /// <summary>
         /// Singleton instance
         /// </summary>
-        private static LoopDetectStackInstance _instance;
+        private static LoopDetectStackInstance? _instance;
 
         /// <summary>
         /// critical section handler

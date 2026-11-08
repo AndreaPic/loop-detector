@@ -94,7 +94,7 @@ namespace DistributedLoopDetector
             {
                 lock (synkObj)
                 {
-                    var cacheValue = DistributedCache.GetString(ComposeKey(actionName, loopDetectId));
+                    var cacheValue = DistributedCache!.GetString(ComposeKey(actionName, loopDetectId));
                     if (cacheValue != null)
                     {
                         return true;
@@ -138,7 +138,7 @@ namespace DistributedLoopDetector
             {
                 lock (synkObj)
                 {
-                    DistributedCache.SetString(ComposeKey(actionName, loopDetectId), loopDetectId);
+                    DistributedCache!.SetString(ComposeKey(actionName, loopDetectId), loopDetectId);
                 }
             }
             else

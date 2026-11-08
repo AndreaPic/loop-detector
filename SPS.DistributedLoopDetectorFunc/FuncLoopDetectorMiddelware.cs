@@ -143,7 +143,7 @@ namespace SPS.DistributedLoopDetectorFunc
 
             //try
             //{
-            await next(context);
+            await next(context!);
 
             if (context?.Items != null)
             {
