@@ -21,7 +21,12 @@ namespace DistributedLoopDetector
         /// <param name="services">Current service collection</param>
         /// <returns>modified service collection</returns>
         public static IServiceCollection AddDistributedLoopDetector(this IServiceCollection services)
+            => AddDistributedLoopDetector(services, AcceptedLoop.None);
+
+        /// <summary>Add loop detection, allowing the selected request differences.</summary>
+        public static IServiceCollection AddDistributedLoopDetector(this IServiceCollection services, AcceptedLoop acceptedLoop)
         {
+            services.AddSingleton(new LoopDetectorOptions(acceptedLoop));
             services.AddHttpContextAccessor() //adds http context accessor
                 .AddLogging()
                 .AddTransient<LoopDetectorHandler>() //register the handler to add current loop context 
