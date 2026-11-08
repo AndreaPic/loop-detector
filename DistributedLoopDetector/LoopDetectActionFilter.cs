@@ -24,6 +24,8 @@ namespace DistributedLoopDetector
         /// </param>
         public void OnActionExecuting(ActionExecutingContext context)
         {
+            if (context?.HttpContext.Items.ContainsKey(LoopDetectResourceFilter.RegistrationKey) == true)
+                return;
             string? path = context?.HttpContext?.Request?.Path;
             if ( (path != null) && (context!=null))
             {
@@ -64,6 +66,8 @@ namespace DistributedLoopDetector
         /// </param>
         public void OnActionExecuted(ActionExecutedContext context)
         {
+            if (context?.HttpContext.Items.ContainsKey(LoopDetectResourceFilter.RegistrationKey) == true)
+                return;
             if (context is not null)
             {
                 if (context.Exception is TimeoutException || context.Exception is TaskCanceledException)

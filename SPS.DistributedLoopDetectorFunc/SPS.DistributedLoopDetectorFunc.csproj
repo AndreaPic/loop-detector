@@ -30,6 +30,9 @@
   <ItemGroup>
     <Compile Include="..\DistributedLoopDetector\LoopDetectorHandler.cs" Link="LoopDetectorHandler.cs" />
     <Compile Include="..\DistributedLoopDetector\LoopDetectStackInstance.cs" Link="LoopDetectStackInstance.cs" />
+    <Compile Include="..\DistributedLoopDetector\AcceptedLoop.cs" Link="AcceptedLoop.cs" />
+    <Compile Include="..\DistributedLoopDetector\LoopDetectorOptions.cs" Link="LoopDetectorOptions.cs" />
+    <Compile Include="..\DistributedLoopDetector\LoopRequestFingerprint.cs" Link="LoopRequestFingerprint.cs" />
   </ItemGroup>
 
   <ItemGroup>

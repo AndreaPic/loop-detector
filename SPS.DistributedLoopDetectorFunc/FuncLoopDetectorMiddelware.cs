@@ -1,183 +1,122 @@
-﻿using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Middleware;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DistributedLoopDetector;
-using System.Net;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net;
 
 namespace SPS.DistributedLoopDetectorFunc
 {
+    /// <summary>Detects distributed loops for HTTP-triggered functions.</summary>
     public class FuncLoopDetectorMiddelware : IFunctionsWorkerMiddleware
     {
-        private LoopDetectorHandler handler;
-        private LoopDetectStackInstance loopDetectStack;
-        private IHttpContextAccessor _httpContextAccessor;
-        //private ILogger _logger;
-        public FuncLoopDetectorMiddelware(LoopDetectorHandler loopDetectorHandler, LoopDetectStackInstance loopDetectStackInstance, IHttpContextAccessor httpContextAccessor)
+        private readonly LoopDetectorHandler handler;
+        private readonly LoopDetectStackInstance loopDetectStack;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly AcceptedLoop acceptedLoop;
+        private readonly ILogger<FuncLoopDetectorMiddelware> logger;
+
+        public FuncLoopDetectorMiddelware(LoopDetectorHandler loopDetectorHandler,
+            LoopDetectStackInstance loopDetectStackInstance, IHttpContextAccessor httpContextAccessor)
+            : this(loopDetectorHandler, loopDetectStackInstance, httpContextAccessor, new LoopDetectorOptions(),
+                NullLogger<FuncLoopDetectorMiddelware>.Instance)
+        {
+        }
+
+        [ActivatorUtilitiesConstructor]
+        public FuncLoopDetectorMiddelware(LoopDetectorHandler loopDetectorHandler,
+            LoopDetectStackInstance loopDetectStackInstance, IHttpContextAccessor httpContextAccessor,
+            LoopDetectorOptions options, ILogger<FuncLoopDetectorMiddelware> logger)
         {
             handler = loopDetectorHandler;
             loopDetectStack = loopDetectStackInstance;
-            _httpContextAccessor = httpContextAccessor;
-            //_logger = logger;
+            this.httpContextAccessor = httpContextAccessor;
+            acceptedLoop = options.AcceptedLoop;
+            this.logger = logger;
         }
-
-        private FunctionExecutionDelegate LoopDetectedExecutionResult = new((ctx) => 
-        { 
-            var response = ctx.GetHttpResponseData();
-            return Task.CompletedTask; 
-        });
-
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
-
-            if (_httpContextAccessor == null)
+            var request = await context.GetHttpRequestDataAsync();
+            if (request == null)
             {
-                _httpContextAccessor = new HttpContextAccessor();
-            }
-            if (_httpContextAccessor.HttpContext == null)
-            {
-                _httpContextAccessor.HttpContext = new DefaultHttpContext();
+                await next(context);
+                return;
             }
 
-            handler.SetFunctionContext(context);
-
-            var httpRequestData = await context.GetHttpRequestDataAsync();
-            string? loopId = null;
-            IEnumerable<string> ?objLoopId = null;
-
-            string? path = context?.FunctionDefinition?.Name; //context?.FunctionId;
-            if ((path != null) && (context != null) && (loopDetectStack != null) && (httpRequestData!=null))
+            string path = context.FunctionDefinition.Name;
+            var previousContext = httpContextAccessor.HttpContext;
+            httpContextAccessor.HttpContext = new DefaultHttpContext { Items = (IDictionary<object, object?>)context.Items };
+            string? registration = null;
+            string[] loopIds = Array.Empty<string>();
+            bool timedOut = false;
+            FunctionRequestBuffer? buffer = null;
+            try
             {
-
-                if (!httpRequestData.Headers.Contains(LoopDetectorHandler.HeaderName))
+                var fingerprint = new LoopRequestFingerprint(null, null);
+                if (acceptedLoop != AcceptedLoop.None)
                 {
-                    loopId = Guid.NewGuid().ToString("N");
-                    loopDetectStack.AddLoopDetectInfo(path, loopId);
-                    context.Items.Add(LoopDetectorHandler.HeaderName, loopId);
-                    _httpContextAccessor.HttpContext.Items.Add(LoopDetectorHandler.HeaderName, loopId);
-                    httpRequestData.Headers.Add(LoopDetectorHandler.HeaderName, loopId);
-                }
-                else
-                {
-
-                    var headers = httpRequestData.Headers;
-                    if ((headers != null) && (!string.IsNullOrEmpty(path)))
+                    var comparisonRequest = new DefaultHttpContext().Request;
+                    comparisonRequest.Path = request.Url.AbsolutePath;
+                    comparisonRequest.QueryString = new QueryString(request.Url.Query);
+                    comparisonRequest.Body = request.Body;
+                    foreach (var header in request.Headers)
+                        comparisonRequest.Headers[header.Key] = header.Value.ToArray();
+                    // Route binding data are request parameters. Exclude worker metadata and other inputs.
+                    foreach (var binding in context.BindingContext.BindingData)
                     {
-                        IEnumerable<string>? headerValues = null;
-                        bool acquired = false;
-                        int count = 0;
-                        do
-                        {
-                            acquired = headers.TryGetValues(LoopDetectorHandler.HeaderName, out headerValues);
-                        } 
-                        while (!acquired && count < 3);
-
-                        if (headerValues != null)
-                        {
-                            bool loopDetected = headerValues.Any(item => loopDetectStack.LoopDetectInfoMatch(path, item));
-                            if (loopDetected)
-                            {
-                                //if (context?.FunctionDefinition?.Name != null)
-                                //{
-                                //    //ILogger logger = context.GetLogger<FuncLoopDetectorMiddelware>();
-                                //    //var logger = context.HttpContext.RequestServices.GetService(typeof(ILogger)) as ILogger;
-                                //    //if (logger != null)
-                                //    //{
-                                //    //    //TODO: use resources
-                                //    //    logger.Log(LogLevel.Error, $"Distributed Loop Detected in: { context?.FunctionDefinition?.Name }");
-                                //    //}
-                                //}
-
-
-                                var request = context.GetHttpRequestData();
-                                if (request != null)
-                                {
-                                    var resp = request.CreateResponse(HttpStatusCode.LoopDetected);
-                                    //await response.WriteAsJsonAsync(data);
-                                    //resp.StatusCode = statusCode;
-                                    context.SetResponseData(resp);
-                                }
-                                return;
-                            }
-                            else
-                            {
-                                int i = 0;
-                                bool retrieved = false;
-                                do
-                                {
-                                    retrieved = httpRequestData.Headers.TryGetValues(LoopDetectorHandler.HeaderName, out objLoopId);
-                                    i++;
-                                }
-                                while (!retrieved && i < 3);
-
-                                if (objLoopId != null)
-                                {
-                                    //ILogger logger = context.GetLogger<FuncLoopDetectorMiddelware>();
-                                    foreach (var item in objLoopId)
-                                    {
-                                        loopDetectStack.AddLoopDetectInfo(path, item);
-                                        //logger.Log(LogLevel.Information, $"PROPAGATE: { item }");
-                                    }
-                                    context.Items.Add(LoopDetectorHandler.HeaderName, objLoopId);
-                                    _httpContextAccessor.HttpContext.Items.Add(LoopDetectorHandler.HeaderName, objLoopId);
-                                }
-
-                            }
-                        }
+                        if (!string.Equals(binding.Key, "Headers", StringComparison.OrdinalIgnoreCase)
+                            && !string.Equals(binding.Key, "Query", StringComparison.OrdinalIgnoreCase)
+                            && !string.Equals(binding.Key, "sys", StringComparison.OrdinalIgnoreCase)
+                            && !context.FunctionDefinition.InputBindings.ContainsKey(binding.Key))
+                            comparisonRequest.RouteValues[binding.Key] = binding.Value;
                     }
-
+                    if (acceptedLoop.HasFlag(AcceptedLoop.WithDifferentPayload))
+                        buffer = FunctionRequestBuffer.Create(context, request, comparisonRequest);
+                    fingerprint = await LoopRequestFingerprint.CreateAsync(comparisonRequest, acceptedLoop, context.CancellationToken);
                 }
-            }
-            if (context != null)
-            {
+
+                loopIds = request.Headers.TryGetValues(LoopDetectorHandler.HeaderName, out var values)
+                    ? values.Where(id => !string.IsNullOrEmpty(id)).Distinct(StringComparer.Ordinal).ToArray()
+                    : Array.Empty<string>();
+                if (loopIds.Length == 0)
+                    loopIds = new[] { Guid.NewGuid().ToString("N") };
+                registration = loopDetectStack.TryRegisterRequest(path, loopIds, fingerprint, acceptedLoop, out bool excluded);
+                if (registration == null)
+                {
+                    logger.LogError("Distributed Loop Detected in: {Api}", path);
+                    context.GetInvocationResult().Value = request.CreateResponse(HttpStatusCode.LoopDetected);
+                    return;
+                }
+                if (excluded)
+                    logger.LogWarning("Distributed loop detected in {Api} for {LoopIds}, excluded by {AcceptedLoop} because the selected request fields differ.",
+                        path, string.Join(",", loopIds), acceptedLoop);
+
+                if (!request.Headers.Contains(LoopDetectorHandler.HeaderName))
+                    request.Headers.Add(LoopDetectorHandler.HeaderName, loopIds);
+                context.Items[LoopDetectorHandler.HeaderName] = loopIds;
                 handler.SetFunctionContext(context);
+                await next(context);
             }
-
-
-            //try
-            //{
-            await next(context!);
-
-            if (context?.Items != null)
+            catch (Exception exception) when (exception is TimeoutException || exception is TaskCanceledException)
             {
-                if (!context.Items.ContainsKey(HttpStatusCode.RequestTimeout.ToString()))
-                {
-                    //httpRequestData = await context.GetHttpRequestDataAsync();
-
-                    if (path != null && loopId != null && loopDetectStack!=null)
-                    {
-                        loopDetectStack.RemoveLoopDetectInfo(path, loopId);
-                        if (context != null)
-                        {
-                            context.Items.Remove(LoopDetectorHandler.HeaderName);
-                            _httpContextAccessor.HttpContext.Items.Remove(LoopDetectorHandler.HeaderName);
-                        }
-                        loopDetectStack.RemoveLoopDetectInfo(path, loopId);
-                        loopId = null;
-                    }
-                }
+                timedOut = true;
+                throw;
             }
-            //}
-            //catch (TimeoutException ex) 
-            //{
-            //}
-            //catch(TaskCanceledException ex)
-            //{
-            //}
-
-            //if (context.Items.TryGetValue("functionitem", out object value) && value is string message)
-            //{
-            //    ILogger logger = context.GetLogger<MyCustomMiddleware>();
-
-            //    logger.LogInformation("From function: {message}", message);
-            //}
+            finally
+            {
+                if (registration != null)
+                {
+                    if (!timedOut && !context.Items.ContainsKey(HttpStatusCode.RequestTimeout.ToString()))
+                        loopDetectStack.RemoveRequest(path, loopIds, registration);
+                    context.Items.Remove(LoopDetectorHandler.HeaderName);
+                }
+                buffer?.Dispose();
+                httpContextAccessor.HttpContext = previousContext;
+            }
         }
     }
 }
