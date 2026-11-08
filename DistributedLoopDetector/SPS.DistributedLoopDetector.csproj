@@ -10,6 +10,7 @@
 	<VersionSuffix></VersionSuffix>
 	<PackageId>SPS.DistributedLoopDetector</PackageId>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
 	<Authors>Andrea Piccioni</Authors>
 	<Company>Studio Progettazione Software</Company>
 	<PackageTags>asp.net,asp.net core, dotnet, .net core, csharp, api, rest, http</PackageTags>
@@ -27,6 +28,10 @@
 	- Please look at github documentation
 	</PackageReleaseNotes>
   </PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
