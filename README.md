@@ -171,7 +171,7 @@ They can communicate in many way such socket, http, web api etc...
 
 ## Simple scenario
 
-![simple scenario](./docs/img/DistributedLoop-Simple.png)
+![simple scenario](https://raw.githubusercontent.com/AndreaPic/loop-detector/main/docs/img/DistributedLoop-Simple.png)
 
 In this image we can see an example of the simpliest scenario.
 
@@ -205,7 +205,7 @@ Service A and Service B are esposed by two instance so there are two instance of
 When Service A call Service B don't know wich instance is calling because the incoming calls are managed by a Network Load Balancer.
 Remember: NLB distributes calls between instances and caller is unaware.
 
-![multi instance scenario](./docs/img/DistributedLoop-Multi-Instance.png)
+![multi instance scenario](https://raw.githubusercontent.com/AndreaPic/loop-detector/main/docs/img/DistributedLoop-Multi-Instance.png)
 
 - Like previous scenario the story start at point 0 where someone or something interact with Method X of Service A but this time services are behind a Network Load Balancer. Assume that NLB redirect the request to Instance 1 of Service A
 - Service A start a new thread (thread 1 on Service A on Instance 1) to execute Method X, and at point 1 Method X call Method Y of Service B through NLB
@@ -239,11 +239,11 @@ Usually the sistem borns without loop problem.
 In the example below there is Service A with Method X that calls Service B Method Y, and Service D Method Z that calls Service A Method X.
 When Actor 1 invokes Method Z, Method Z calls Method X and Method X calls Methox Y.
 
-![multi instance scenario](./docs/img/DistributedLoop-Common-1.png)
+![multi instance scenario](https://raw.githubusercontent.com/AndreaPic/loop-detector/main/docs/img/DistributedLoop-Common-1.png)
 
 New implemetations on Method Y involves a new call to Method Z.
 
-![multi instance scenario](./docs/img/DistributedLoop-Common-2.png)
+![multi instance scenario](https://raw.githubusercontent.com/AndreaPic/loop-detector/main/docs/img/DistributedLoop-Common-2.png)
 
 If there aren't integration tests or there are only unit test with mockup you could be not aware of starting a distributed loop.
 
